@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send({ message: "Hello World!" });
+  res.send({ message: "Hello from Back end!" });
 });
 
 app.use("/", accountRoutes);
@@ -17,4 +17,4 @@ app.use("/", accountRoutes);
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
-//# sourceURL=backend/routes/server.js
+//# sourceURL=backend/routes/server.jshat
