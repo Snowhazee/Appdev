@@ -1,43 +1,44 @@
-const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
-const router = express.Router();
-
+const express = require('express');
 const users = [];
 
-router.post("/register", async (req, res) => {
-  const { email, password } = req.body;
+exports.register = async (req,res)=>{
 
-  if (!email || !password)
-    return res.status(400).json({ message: "Missing fields" });
+ const { email, password } = req.body;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+ if(!email || !password){
+   return res.status(400).json({message:"Missing fields"})
+ }
 
-  users.push({ email, password: hashedPassword });
+ const hashedPassword = await bcrypt.hash(password,10);
 
-  res.json({ message: "User registered" });
-});
+ users.push({email,password:hashedPassword});
 
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+ res.json({message:"User registered"});
+}
 
-  const user = users.find(u => u.email === email);
-  if (!user)
-    return res.status(400).json({ message: "User not found" });
+exports.login = async (req,res)=>{
 
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid)
-    return res.status(400).json({ message: "Invalid password" });
+ const { email, password } = req.body;
 
-  const token = jwt.sign(
-    { email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
+ const user = users.find(u => u.email === email);
 
-  res.json({ token });
-});
+ if(!user){
+   return res.status(400).json({message:"User not found"})
+ }
 
-module.exports = router;
-//# sourceURL=backend/routes/auth.js
+ const valid = await bcrypt.compare(password,user.password);
+
+ if(!valid){
+   return res.status(400).json({message:"Invalid password"})
+ }
+
+ const token = jwt.sign(
+   {email:user.email},
+   process.env.JWT_SECRET,
+   {expiresIn:"1h"}
+ );
+
+ res.json({token});
+}

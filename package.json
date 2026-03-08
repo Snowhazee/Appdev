@@ -13,6 +13,6 @@
   "scripts": {
     "server": "nodemon backend/server.js",
     "browser": "browser-sync start --proxy 'http://localhost:3000' --files 'backend/**/*.js'",
-    "dev": "node --watch backend/routes/server.js"
+    "dev": "node --watch backend/server.js"
   }
 }
