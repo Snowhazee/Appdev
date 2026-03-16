@@ -1,5 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
+import cartIcon from './assets/cart.png'
+import accountIcon from './assets/account.png'
 
 const search = ref('')
 
@@ -21,14 +23,26 @@ const filteredProducts = computed(() => {
   <div class="container">
 
     <header class="navbar">
-      <h2>My Shop</h2>
+      <h1 class="logo">Fahhh</h1>
 
-      <input
-        type="text"
-        placeholder="Search product..."
-        v-model="search"
-        class="search"
-      />
+      <div class="search-box">
+        <input
+          type="text"
+          placeholder="Search product..."
+          v-model="search"
+          class="search"
+        />
+      </div>
+
+    <div class="icons">
+  <button class="icon-btn">
+    <img :src="cartIcon" alt="cart">
+  </button>
+
+  <button class="icon-btn">
+    <img :src="accountIcon" alt="account">
+  </button>
+</div>
     </header>
 
     <main class="products">
@@ -40,24 +54,74 @@ const filteredProducts = computed(() => {
         {{ product.name }}
       </div>
     </main>
-
+   <footer class="footer">
+      <h1>Fahhh</h1>
+      <p>Copy Right © Fahhh.com.</p>
+    </footer>
   </div>
 </template>
 
 <style>
+.container{
+  font-family: Arial, sans-serif;
+  background: white;
+}
+
+
 .navbar {
+  position: relative;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   padding: 20px;
-  background: #222;
+  background: #9EDAFF;
   color: white;
+}
+
+.logo{
+  font-weight: bold;
+}
+
+.search-box{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.search{
+  width: 280px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  background: white;
+  color: black;
+}
+
+.search::placeholder{
+  color: #888;
+}
+
+.icons{
+  margin-left: auto;
+  display: flex;
+  gap: 15px;
   align-items: center;
 }
 
-.search {
-  padding: 8px;
-  border-radius: 5px;
+.icon-btn{
+  background: transparent;
   border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.icon-btn img{
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.icon-btn:hover{
+  transform: scale(1.1);
 }
 
 .products {
@@ -72,5 +136,17 @@ const filteredProducts = computed(() => {
   background: #f3f3f3;
   border-radius: 8px;
   text-align: center;
+  font-weight: bold;
+}
+
+.footer{
+  background: #F5F5F5;
+  color: #CDCBCB;   
+  text-align: center;
+  padding: 15px;
+}
+
+.footer h1{
+  color: #CDCBCB;
 }
 </style>
