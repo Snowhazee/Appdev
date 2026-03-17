@@ -2,8 +2,17 @@
 import { ref, computed } from 'vue'
 import cartIcon from './assets/cart.png'
 import accountIcon from './assets/account.png'
+import AccountPage from './AccountPage.vue'
 
+const showAccount = ref(false)
 const search = ref('')
+
+function openAccount() {
+  showAccount.value = true
+}
+function closeAccount() {
+  showAccount.value = false
+}
 
 const products = ref([
   { id: 1, name: 'Laptop' },
@@ -21,43 +30,47 @@ const filteredProducts = computed(() => {
 
 <template>
   <div class="container">
+    <template v-if="!showAccount">
+      <header class="navbar">
+        <h1 class="logo">Fahhh</h1>
 
-    <header class="navbar">
-      <h1 class="logo">Fahhh</h1>
+        <div class="search-box">
+          <input
+            type="text"
+            placeholder="Search product..."
+            v-model="search"
+            class="search"
+          />
+        </div>
 
-      <div class="search-box">
-        <input
-          type="text"
-          placeholder="Search product..."
-          v-model="search"
-          class="search"
-        />
-      </div>
+        <div class="icons">
+          <button class="icon-btn">
+            <img :src="cartIcon" alt="cart" />
+          </button>
 
-    <div class="icons">
-  <button class="icon-btn">
-    <img :src="cartIcon" alt="cart">
-  </button>
+          <button class="icon-btn" @click="openAccount">
+            <img :src="accountIcon" alt="account" />
+          </button>
+        </div>
+      </header>
 
-  <button class="icon-btn">
-    <img :src="accountIcon" alt="account">
-  </button>
-</div>
-    </header>
+      <main class="products">
+        <div
+          class="card"
+          v-for="product in filteredProducts"
+          :key="product.id"
+        >
+          {{ product.name }}
+        </div>
+      </main>
 
-    <main class="products">
-      <div
-        class="card"
-        v-for="product in filteredProducts"
-        :key="product.id"
-      >
-        {{ product.name }}
-      </div>
-    </main>
-   <footer class="footer">
-      <h1>Fahhh</h1>
-      <p>Copy Right © Fahhh.com.</p>
-    </footer>
+      <footer class="footer">
+        <h1>Fahhh</h1>
+        <p>Copy Right © Fahhh.com.</p>
+      </footer>
+    </template>
+
+    <AccountPage v-else @close="closeAccount" />
   </div>
 </template>
 
