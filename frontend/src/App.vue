@@ -3,15 +3,26 @@ import { ref, computed } from 'vue'
 import cartIcon from './assets/cart.png'
 import accountIcon from './assets/account.png'
 import AccountPage from './AccountPage.vue'
+import CartPage from './CartPage.vue'
 
 const showAccount = ref(false)
+const showCart = ref(false)
 const search = ref('')
 
 function openAccount() {
   showAccount.value = true
+  showCart.value = false
 }
 function closeAccount() {
   showAccount.value = false
+}
+
+function openCart() {
+  showCart.value = true
+  showAccount.value = false
+}
+function closeCart() {
+  showCart.value = false
 }
 
 const products = ref([
@@ -30,7 +41,8 @@ const filteredProducts = computed(() => {
 
 <template>
   <div class="container">
-    <template v-if="!showAccount">
+
+    <template v-if="!showAccount && !showCart">
       <header class="navbar">
         <h1 class="logo">Fahhh</h1>
 
@@ -44,7 +56,7 @@ const filteredProducts = computed(() => {
         </div>
 
         <div class="icons">
-          <button class="icon-btn">
+          <button class="icon-btn" @click="openCart">
             <img :src="cartIcon" alt="cart" />
           </button>
 
@@ -70,7 +82,16 @@ const filteredProducts = computed(() => {
       </footer>
     </template>
 
-    <AccountPage v-else @close="closeAccount" />
+    <AccountPage 
+      v-else-if="showAccount" 
+      @close="closeAccount" 
+    />
+
+    <CartPage 
+      v-else-if="showCart" 
+      @close="closeCart" 
+    />
+
   </div>
 </template>
 
@@ -79,7 +100,6 @@ const filteredProducts = computed(() => {
   font-family: Arial, sans-serif;
   background: white;
 }
-
 
 .navbar {
   position: relative;
