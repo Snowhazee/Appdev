@@ -58,10 +58,12 @@ const filteredProducts = computed(() => {
         <div class="icons">
           <button class="icon-btn" @click="openCart">
             <img :src="cartIcon" alt="cart" />
+            Cart
           </button>
 
           <button class="icon-btn" @click="openAccount">
             <img :src="accountIcon" alt="account" />
+            Account
           </button>
         </div>
       </header>
@@ -123,9 +125,9 @@ const filteredProducts = computed(() => {
 .search{
   width: 280px;
   padding: 10px 14px;
-  border-radius: 8px;
-  border: none;
-  background: white;
+  border-radius: 0;
+  border: 1px solid black;
+  background: transparent;
   color: black;
 }
 
@@ -145,6 +147,9 @@ const filteredProducts = computed(() => {
   border: none;
   cursor: pointer;
   padding: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .icon-btn img{
