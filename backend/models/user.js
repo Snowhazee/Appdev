@@ -1,12 +1,39 @@
-class Order {
-    constructor(id, userId, items, totalPrice, status, createdAt) {
-        this.id = id;
-        this.userId = userId;
-        this.items = items; 
-        this.totalPrice = totalPrice;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
-}
+const mongoose = require('mongoose');
 
-module.exports = Order;
+const orderSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    items: [
+        {
+            product: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Product',
+                required: true
+            },
+            quantity: {
+                type: Number,
+                required: true,
+                min: 1
+            },
+            price: {
+                type: Number,
+                required: true
+            }
+        }
+    ],
+    totalPrice: {
+        type: Number,
+        required: true
+    },
+    status: {
+        type: String,
+        default: 'pending'
+    }
+}, {
+    timestamps: true   
+});
+
+module.exports = mongoose.model('Order', orderSchema);

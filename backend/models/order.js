@@ -1,11 +1,23 @@
-//const db = require('../util/database');
-class Order{
-    constructor(id,userId,productId,quantity,totalPrice){
-        this.id = id;
-        this.userId = userId;
-        this.productId = productId;
-        this.quantity = quantity;
-        this.totalPrice = totalPrice;
-    }
-}
-module.exports = Order;
+const mongoose = require('mongoose');
+const orderschema = new mongoose.Schema({
+    userId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User',
+        required:true
+    },
+    productId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Product',
+        required:true
+    },
+    quantity:{
+        type:Number,
+        require:true,
+        min: 1
+    },
+    totalPrice:{
+        type:Number,
+        required:true
+    },
+},{timestamps:true});
+
