@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/product');
 
-// POST /products → เพิ่มสินค้า
-router.post("/", productController.createProduct);
-
-// GET /products → ดูสินค้าทั้งหมด
-router.get("/", productController.getAllProducts);
+router.post("/", productController.createProduct);         // CREATE
+router.get("/", productController.getAllProducts);         // READ ALL + SEARCH
+router.get("/:id", productController.getProductById);      // READ ONE
+router.put("/:id", productController.updateProduct);      // UPDATE
+router.delete("/:id", productController.deleteProduct);   // DELETE
 
 module.exports = router;
