@@ -1,19 +1,20 @@
 require("dotenv").config();
-console.log("JWT_SECRET is:", process.env.JWT_SECRET);
 const express = require("express");
-const accountRoutes = require("./routes/auth");
+const mongoose = require("mongoose");
+const productRoutes = require("./routes/product");
+const authRoutes = require("./routes/auth"); // ถ้ามี auth
 
 const app = express();
-
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send({ message: "Hello from Back end!" });
-});
+// Connect MongoDB
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.log(err));
 
-app.use("/", accountRoutes);
+// Routes
+app.use("/products", productRoutes); // GET /products, POST /products
+app.use("/api", authRoutes);         
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
-});
-//# sourceURL=backend/routes/server.js
+// Start server
+app.listen(3000, () => console.log("Server running on port 3000"));
