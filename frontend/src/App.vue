@@ -6,6 +6,7 @@ import heroImg from './assets/placeholder.jpg'
 import AccountPage from './AccountPage.vue'
 import CartPage from './CartPage.vue'
 import ProductPage from './ProductPage.vue'
+import SeeAllPage from './SeeAllPage.vue'
 
 const currentPage = ref('home')
 const search = ref('')
@@ -76,7 +77,7 @@ function changePage(page) {
             <div class="section-inner">
               <div class="section-header">
                 <h2>Featured Product</h2>
-                <button class="see-all-btn">See All</button>
+                <button class="see-all-btn" @click="changePage('seeall')">See All</button>
               </div>
               <div class="product-grid grid-4">
                 <div class="product-card" v-for="product in filteredProducts.slice(0, 8)" :key="'featured-'+product.id">
@@ -95,7 +96,7 @@ function changePage(page) {
             <div class="section-inner">
               <div class="section-header">
                 <h2>Best Seller</h2>
-                <button class="see-all-btn">See All</button>
+                <button class="see-all-btn" @click="changePage('seeall')">See All</button>
               </div>
               <div class="best-seller-layout">
                 <div class="bs-left">
@@ -119,7 +120,7 @@ function changePage(page) {
             <div class="section-inner">
               <div class="section-header">
                 <h2>Product</h2>
-                <button class="see-all-btn">See All</button>
+                <button class="see-all-btn" @click="changePage('seeall')">See All</button>
               </div>
               <div class="product-grid grid-4">
                 <div class="product-card" v-for="product in filteredProducts.slice(0, 12)" :key="'product-'+product.id">
@@ -138,7 +139,7 @@ function changePage(page) {
             <div class="section-inner">
               <div class="section-header">
                 <h2>Trend Product</h2>
-                <button class="see-all-btn">See All</button>
+                <button class="see-all-btn" @click="changePage('seeall')">See All</button>
               </div>
               <div class="product-grid grid-5">
                 <div class="product-card" v-for="product in filteredProducts.slice(0, 5)" :key="'trend-'+product.id">
@@ -163,7 +164,8 @@ function changePage(page) {
 
       <AccountPage v-else-if="currentPage === 'account'" @close="changePage('home')" />
       <CartPage v-else-if="currentPage === 'cart'" @close="changePage('home')" />
-      <ProductPage v-else-if="currentPage === 'product'" @close="changePage('home')" />
+      <ProductPage v-else-if="currentPage === 'product'" @close="changePage('home')" @open-see-all="changePage('seeall')" />
+      <SeeAllPage v-else-if="currentPage === 'seeall'" :products="filteredProducts" :search="search" @close="changePage('home')" @open-product="changePage('product')" />
 
     </div>
   </div>

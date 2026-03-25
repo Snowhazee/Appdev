@@ -69,7 +69,7 @@ const relatedProductPlaceholders = ref([
       <section class="related-products-section">
         <div class="section-header">
           <h3>Related Products</h3>
-          <button class="see-all-btn">See All</button>
+          <button class="see-all-btn" @click="$emit('open-see-all')">See All</button>
         </div>
         <div class="product-grid">
           <div v-for="product in relatedProductPlaceholders" :key="product.id" class="product-card">
