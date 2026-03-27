@@ -1,20 +1,43 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
+
 const productRoutes = require("./routes/product");
-const authRoutes = require("./routes/auth"); // ถ้ามี auth
+const authRoutes = require("./routes/auth");
+const orderRoutes = require("./routes/order"); // เพิ่ม order
 
 const app = express();
+
+// Middleware
+app.use(cors()); // frontend
 app.use(express.json());
 
 // Connect MongoDB
 mongoose.connect(process.env.MONGO_URL)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log(err));
+.then(() => console.log("✅ MongoDB connected"))
+.catch(err => {
+  console.error("❌ MongoDB connection error:", err);
+  process.exit(1);
+});
 
 // Routes
-app.use("/products", productRoutes); // GET /products, POST /products
-app.use("/api", authRoutes);         
+app.use("/api/products", productRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/orders", orderRoutes);
+
+// Test Route (เช็คว่า frontend ต่อได้ไหม)
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Backend connected successfully 🚀" });
+});
+
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
 
 // Start server
-app.listen(3000, () => console.log("Server running on port 3000"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on port ${PORT}`)
+);

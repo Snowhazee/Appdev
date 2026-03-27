@@ -1,7 +1,7 @@
-import Order from "../models/order.js";
+const Order = require("../models/order");
 
 // Create Order
-export const createOrder = async (req, res) => {
+const createOrder = async (req, res) => {
   try {
     const order = new Order({
       user: req.user._id,
@@ -17,7 +17,7 @@ export const createOrder = async (req, res) => {
 };
 
 // Get My Orders
-export const getMyOrders = async (req, res) => {
+const getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id });
     res.json(orders);
@@ -27,7 +27,7 @@ export const getMyOrders = async (req, res) => {
 };
 
 // Get Order By ID
-export const getOrderById = async (req, res) => {
+const getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id).populate("user", "name email");
 
@@ -39,8 +39,8 @@ export const getOrderById = async (req, res) => {
   }
 };
 
-// Update Order Status (Admin)
-export const updateOrderStatus = async (req, res) => {
+// Update Order Status
+const updateOrderStatus = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
 
@@ -53,4 +53,11 @@ export const updateOrderStatus = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+};
+
+module.exports = {
+  createOrder,
+  getMyOrders,
+  getOrderById,
+  updateOrderStatus,
 };

@@ -1,7 +1,7 @@
-import jwt from "jsonwebtoken";
-import User from "../models/user.js";
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
-export const protect = async (req, res, next) => {
+const protect = async (req, res, next) => {
   let token;
 
   if (req.headers.authorization?.startsWith("Bearer")) {
@@ -14,19 +14,21 @@ export const protect = async (req, res, next) => {
 
       next();
     } catch (error) {
-      res.status(401).json({ message: "Not authorized" });
+      return res.status(401).json({ message: "Not authorized" });
     }
   }
 
   if (!token) {
-    res.status(401).json({ message: "No token" });
+    return res.status(401).json({ message: "No token" });
   }
 };
 
-export const admin = (req, res, next) => {
+const admin = (req, res, next) => {
   if (req.user && req.user.role === "admin") {
     next();
   } else {
     res.status(403).json({ message: "Admin only" });
   }
 };
+
+module.exports = { protect, admin };
