@@ -12,6 +12,7 @@ import CheckoutPage from './CheckoutPage.vue'
 
 const currentPage = ref(localStorage.getItem('page') || 'home')
 const search = ref('')
+const cart = ref([])
 
 const products = ref([
   { id: 1, title: 'Shorekeeper', subtitle: '1/7 Scale Figure', price: '499 $', image: heroImg },
@@ -37,6 +38,19 @@ const filteredProducts = computed(() => {
 function changePage(page) {
   currentPage.value = page
   localStorage.setItem('page', page)
+}
+
+function addToCart(product) {
+  const existingItem = cart.value.find(item => item.id === product.id)
+  if (existingItem) {
+    existingItem.quantity = (existingItem.quantity || 1) + 1
+  } else {
+    cart.value.push({ ...product, quantity: 1 })
+  }
+}
+
+function removeFromCart(productId) {
+  cart.value = cart.value.filter(item => item.id !== productId)
 }
 
 </script>
@@ -168,8 +182,8 @@ function changePage(page) {
 
       <AccountPage v-else-if="currentPage === 'account'" @close="changePage('home')" @goRegister="changePage('register')" />
       <Register v-else-if="currentPage === 'register'" @back="changePage('account')" />
-      <CartPage v-else-if="currentPage === 'cart'" @close="changePage('home')" />
-      <ProductPage v-else-if="currentPage === 'product'" @close="changePage('home')" @open-see-all="changePage('seeall')" @open-checkout="changePage('checkout')" />
+      <CartPage v-else-if="currentPage === 'cart'" :cart="cart" @remove="removeFromCart" @close="changePage('home')" />
+      <ProductPage v-else-if="currentPage === 'product'" :product="{ id: 6, title: 'Jinhsi', subtitle: '1/7 Scale', price: '499 $' }" :onAddToCart="addToCart" @close="changePage('home')" @open-see-all="changePage('seeall')" @open-checkout="changePage('checkout')" />
       <CheckoutPage v-else-if="currentPage === 'checkout'" @close="changePage('home')" />
       <SeeAllPage v-else-if="currentPage === 'seeall'" :products="filteredProducts" :search="search" @close="changePage('home')" @open-product="changePage('product')" />
 

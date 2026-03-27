@@ -2,6 +2,17 @@
 import { ref } from 'vue'
 import heroImage from './assets/placeholder.jpg'
 
+defineProps({
+  product: {
+    type: Object,
+    default: () => ({ id: 6, title: 'Jinhsi', subtitle: '1/7 Scale', price: '499 $' })
+  },
+  onAddToCart: {
+    type: Function,
+    default: () => {}
+  }
+})
+
 const emit = defineEmits(['close', 'open-checkout', 'open-see-all'])
 
 const thumbnailPlaceholders = ref(
@@ -37,7 +48,7 @@ const relatedProductPlaceholders = ref([
             <div class="purchase-block">
               <p class="price">499 $</p>
               <div class="action-buttons">
-                <button class="add-to-cart-btn">Add to Cart</button>
+                <button class="add-to-cart-btn" @click="onAddToCart({ id: product.id, title: product.title, subtitle: product.subtitle, price: product.price, image: heroImage })">Add to Cart</button>
                 <button class="order-now-btn" @click="emit('open-checkout')">Order Now</button>
               </div>
             </div>
