@@ -1,5 +1,5 @@
 <script setup>
-const emit = defineEmits(['close', 'goRegister'])
+const emit = defineEmits(['back'])
 </script>
 
 <template>
@@ -12,11 +12,14 @@ const emit = defineEmits(['close', 'goRegister'])
 
     <div class="right">
       <div class="card">
-        <button class="back-button" @click="emit('close')">
+        <button class="back-button" @click="emit('back')">
           ← Back
         </button>
 
-        <h1>LOGIN</h1>
+        <h1>REGISTER</h1>
+
+        <label>USERNAME</label>
+        <input type="text" placeholder="username" />
 
         <label>EMAIL</label>
         <input type="text" placeholder="email" />
@@ -24,11 +27,14 @@ const emit = defineEmits(['close', 'goRegister'])
         <label>PASSWORD</label>
         <input type="password" placeholder="password" />
 
-        <button>LOGIN</button>
+        <label>CONFIRM PASSWORD</label>
+        <input type="password" placeholder="confirm password" />
+
+        <button>REGISTER</button>
 
         <p>
-          Not have account ?
-          <span @click="emit('goRegister')">Create one</span>
+          Already have account ?
+          <span @click="emit('back')">Login</span>
         </p>
       </div>
     </div>
@@ -59,7 +65,7 @@ const emit = defineEmits(['close', 'goRegister'])
 
 .logo h1 {
   font-size: 40px;
-  color : black
+  color: black;
 }
 
 .right {
@@ -80,7 +86,7 @@ const emit = defineEmits(['close', 'goRegister'])
 .card h1 {
   text-align: center;
   margin-bottom: 20px;
-  color :black;
+  color: black;
 }
 
 .card label {

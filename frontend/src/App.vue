@@ -4,11 +4,12 @@ import cartIcon from './assets/cart.png'
 import accountIcon from './assets/account.png'
 import heroImg from './assets/placeholder.jpg' 
 import AccountPage from './AccountPage.vue'
+import Register from './Register.vue'
 import CartPage from './CartPage.vue'
 import ProductPage from './ProductPage.vue'
 import SeeAllPage from './SeeAllPage.vue'
 
-const currentPage = ref('home')
+const currentPage = ref(localStorage.getItem('page') || 'home')
 const search = ref('')
 
 const products = ref([
@@ -34,7 +35,9 @@ const filteredProducts = computed(() => {
 
 function changePage(page) {
   currentPage.value = page
+  localStorage.setItem('page', page)
 }
+
 </script>
 
 <template>
@@ -162,7 +165,8 @@ function changePage(page) {
         </footer>
       </template>
 
-      <AccountPage v-else-if="currentPage === 'account'" @close="changePage('home')" />
+      <AccountPage v-else-if="currentPage === 'account'" @close="changePage('home')"@goRegister="changePage('register')"/>
+      <Register v-else-if="currentPage === 'register'" @back="changePage('account')" />
       <CartPage v-else-if="currentPage === 'cart'" @close="changePage('home')" />
       <ProductPage v-else-if="currentPage === 'product'" @close="changePage('home')" @open-see-all="changePage('seeall')" />
       <SeeAllPage v-else-if="currentPage === 'seeall'" :products="filteredProducts" :search="search" @close="changePage('home')" @open-product="changePage('product')" />
