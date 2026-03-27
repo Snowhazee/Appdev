@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import heroImage from './assets/placeholder.jpg'
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'open-checkout', 'open-see-all'])
 
 const thumbnailPlaceholders = ref(
   Array.from({ length: 8 }, (_, i) => ({
@@ -23,7 +23,7 @@ const relatedProductPlaceholders = ref([
 <template>
   <main class="product-page-content">
     <div class="content-container">
-      
+      <div class="product-wrapper">
       <button class="back-btn" @click="emit('close')">← Back to Home</button>
 
       <section class="product-detail">
@@ -36,7 +36,10 @@ const relatedProductPlaceholders = ref([
             </div>
             <div class="purchase-block">
               <p class="price">499 $</p>
-              <button class="add-to-cart-btn">Add to Cart</button>
+              <div class="action-buttons">
+                <button class="add-to-cart-btn">Add to Cart</button>
+                <button class="order-now-btn" @click="emit('open-checkout')">Order Now</button>
+              </div>
             </div>
           </div>
         </div>
@@ -82,32 +85,45 @@ const relatedProductPlaceholders = ref([
           </div>
         </div>
       </section>
-
+      </div> <!-- product-wrapper -->
     </div>
   </main>
 </template>
 
 <style scoped>
 .product-page-content {
-  background-color: #FFF;
-  color: #000;
-  padding: 20px 0;
+  background: linear-gradient(180deg, #dff4ff 0%, #f9fbff 100%);
+  min-height: 100vh;
+  color: #0f172a;
+  padding: 30px 0 50px;
 }
 
 .content-container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 16px;
+}
+
+.product-wrapper {
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid #d7e8f7;
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.08);
+  padding: 26px;
 }
 
 .back-btn {
-  background: transparent;
   border: none;
-  font-size: 16px;
+  padding: 8px 14px;
+  background: #f3f9ff;
+  color: #1f2937;
+  border-radius: 8px;
   cursor: pointer;
-  margin-bottom: 20px;
-  color: #555;
-  padding: 0;
+  margin-bottom: 18px;
+}
+
+.back-btn:hover {
+  background: #e8f5ff;
 }
 
 .back-btn:hover {
@@ -162,7 +178,10 @@ const relatedProductPlaceholders = ref([
 
 .purchase-block {
   margin-top: 20px;
-  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
   border-top: 1px solid #AAA;
   padding-top: 10px;
 }
@@ -251,11 +270,44 @@ textarea {
   padding-top: 20px;
 }
 
-.section-header {
+.product-page-content {
+  background: linear-gradient(180deg, #dff4ff 0%, #f9fbff 100%);
+  min-height: 100vh;
+  color: #0f172a;
+  padding: 30px 0 50px;
+}
+
+.content-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.product-wrapper {
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid #d7e8f7;
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.08);
+  padding: 26px;
+}
+
+.action-buttons {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.order-now-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 15px;
+  background: #ff6b6b;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.order-now-btn:hover {
+  background: #e34f4f;
 }
 
 .see-all-btn {

@@ -8,6 +8,7 @@ import Register from './Register.vue'
 import CartPage from './CartPage.vue'
 import ProductPage from './ProductPage.vue'
 import SeeAllPage from './SeeAllPage.vue'
+import CheckoutPage from './CheckoutPage.vue'
 
 const currentPage = ref(localStorage.getItem('page') || 'home')
 const search = ref('')
@@ -165,10 +166,11 @@ function changePage(page) {
         </footer>
       </template>
 
-      <AccountPage v-else-if="currentPage === 'account'" @close="changePage('home')"@goRegister="changePage('register')"/>
+      <AccountPage v-else-if="currentPage === 'account'" @close="changePage('home')" @goRegister="changePage('register')" />
       <Register v-else-if="currentPage === 'register'" @back="changePage('account')" />
       <CartPage v-else-if="currentPage === 'cart'" @close="changePage('home')" />
-      <ProductPage v-else-if="currentPage === 'product'" @close="changePage('home')" @open-see-all="changePage('seeall')" />
+      <ProductPage v-else-if="currentPage === 'product'" @close="changePage('home')" @open-see-all="changePage('seeall')" @open-checkout="changePage('checkout')" />
+      <CheckoutPage v-else-if="currentPage === 'checkout'" @close="changePage('home')" />
       <SeeAllPage v-else-if="currentPage === 'seeall'" :products="filteredProducts" :search="search" @close="changePage('home')" @open-product="changePage('product')" />
 
     </div>
