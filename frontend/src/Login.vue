@@ -1,5 +1,40 @@
 <script setup>
-const emit = defineEmits(['loginSuccess', 'goRegister', 'close'])
+import { ref } from 'vue'
+import axios from 'axios'
+
+// defineEmits ไม่ต้อง import ใน Vue 3 (Compiler Macro)
+const emit = defineEmits(['back', 'login-success', 'go-register'])
+
+const email = ref('')
+const password = ref('')
+const isLoading = ref(false)
+
+const handleLogin = async () => {
+  if (!email.value || !password.value) {
+    alert("Please fill in all fields")
+    return
+  }
+
+  isLoading.value = true
+  try {
+    const res = await axios.post('http://localhost:3000/api/auth/login', {
+      email: email.value,
+      password: password.value
+    })
+
+    // เก็บ Token ลงเครื่อง
+    localStorage.setItem('token', res.data.token)
+    
+    alert("Login Successful! 🎉")
+    emit('login-success') 
+  } catch (err) {
+    // ดัก Error จาก Backend เช่น "User not found"
+    const errorMsg = err.response?.data?.message || "Login failed!"
+    alert(errorMsg)
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -12,23 +47,33 @@ const emit = defineEmits(['loginSuccess', 'goRegister', 'close'])
 
     <div class="right">
       <div class="card">
-        <button class="back-button" @click="emit('close')">
-          ← Back
-        </button>
+        <button class="back-button" @click="emit('back')">← Back</button>
 
         <h1>LOGIN</h1>
 
         <label>EMAIL</label>
-        <input type="text" placeholder="email" />
+        <input 
+          v-model="email" 
+          type="email" 
+          placeholder="your@email.com" 
+          @keyup.enter="handleLogin"
+        />
 
         <label>PASSWORD</label>
-        <input type="password" placeholder="password" />
+        <input 
+          v-model="password" 
+          type="password" 
+          placeholder="••••••••••••" 
+          @keyup.enter="handleLogin"
+        />
 
-        <button>LOGIN</button>
+        <button @click="handleLogin" :disabled="isLoading">
+          {{ isLoading ? 'Logging in...' : 'LOGIN' }}
+        </button>
 
         <p>
-          Not have account ?
-          <span @click="emit('goRegister')">Create one</span>
+          Not have account ? 
+          <span class="link" @click="emit('go-register')">Create one</span>
         </p>
       </div>
     </div>
@@ -39,7 +84,7 @@ const emit = defineEmits(['loginSuccess', 'goRegister', 'close'])
 .login-page {
   display: flex;
   height: 100vh;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
 }
 
 .left {
@@ -59,7 +104,8 @@ const emit = defineEmits(['loginSuccess', 'goRegister', 'close'])
 
 .logo h1 {
   font-size: 40px;
-  color : black
+  color: black;
+  margin: 0;
 }
 
 .right {
@@ -74,33 +120,52 @@ const emit = defineEmits(['loginSuccess', 'goRegister', 'close'])
   width: 350px;
   background: #eee;
   padding: 30px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border-radius: 8px;
 }
 
 .card h1 {
   text-align: center;
   margin-bottom: 20px;
-  color :black;
+  color: black;
 }
 
 .card label {
   display: block;
-  margin-top: 10px;
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 14px;
 }
 
 .card input {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* สำคัญ: ป้องกัน input ล้น card */
 }
 
 .card button {
-  margin-top: 20px;
+  margin-top: 25px;
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background: #8db9d3;
+  color: white;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.card button:hover {
+  background: #6f97d6;
+}
+
+.card button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 .back-button {
@@ -108,10 +173,23 @@ const emit = defineEmits(['loginSuccess', 'goRegister', 'close'])
   border: none;
   cursor: pointer;
   margin-bottom: 10px;
+  color: #666;
 }
 
-.card span {
+.link {
   color: #8db9d3;
   cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.link:hover {
+  color: #6f97d6;
+}
+
+p {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
 }
 </style>

@@ -1,5 +1,38 @@
 <script setup>
-const emit = defineEmits(['back'])
+import { ref } from 'vue'
+import axios from 'axios'
+
+const emit = defineEmits(['back', 'register-success'])
+
+// สร้างตัวแปรมารับค่าจาก Input
+const username = ref('')
+const email = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+
+const handleRegister = async () => {
+  // 1. เช็คความถูกต้องเบื้องต้น
+  if (password.value !== confirmPassword.value) {
+    alert("รหัสผ่านไม่ตรงกัน!")
+    return
+  }
+
+  try {
+    // 2. ยิง API ไปที่ Backend (Port 3000)
+    const res = await axios.post('http://localhost:3000/api/auth/register', {
+      name: username.value, // ส่งชื่อ
+      email: email.value,    // ส่งอีเมล
+      password: password.value // ส่งรหัส
+    })
+
+    // 3. ถ้าสำเร็จ
+    alert("สมัครสมาชิกสำเร็จ!")
+    emit('back') // พากลับไปหน้า Login
+  } catch (err) {
+    // 4. ถ้าพัง (เช่น อีเมลซ้ำ หรือ Server ปิด)
+    alert(err.response?.data?.message || "สมัครสมาชิกไม่สำเร็จ")
+  }
+}
 </script>
 
 <template>
@@ -19,18 +52,18 @@ const emit = defineEmits(['back'])
         <h1>REGISTER</h1>
 
         <label>USERNAME</label>
-        <input type="text" placeholder="username" />
+        <input v-model="username" type="text" placeholder="username" />
 
         <label>EMAIL</label>
-        <input type="text" placeholder="email" />
+        <input v-model="email" type="text" placeholder="email" />
 
         <label>PASSWORD</label>
-        <input type="password" placeholder="password" />
+        <input v-model="password" type="password" placeholder="password" />
 
         <label>CONFIRM PASSWORD</label>
-        <input type="password" placeholder="confirm password" />
+        <input v-model="confirmPassword" type="password" placeholder="confirm password" />
 
-        <button>REGISTER</button>
+        <button @click="handleRegister">REGISTER</button>
 
         <p>
           Already have account ?

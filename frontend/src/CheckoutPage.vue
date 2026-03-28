@@ -1,9 +1,19 @@
 <script setup>
-import { ref, reactive } from 'vue'
-import heroImage from './assets/placeholder.jpg'
-const emit = defineEmits(['close'])
+import { ref, reactive, onMounted, computed } from 'vue'
+import axios from 'axios'
+
+// 1. รับข้อมูลจากหน้าหลัก
+const props = defineProps({
+  cartItems: {
+    type: Array,
+    default: () => []
+  }
+})
+
+const emit = defineEmits(['close', 'order-success'])
 
 const step = ref(1)
+const loading = ref(false)
 const checkoutForm = reactive({
   name: '',
   phone: '',
@@ -11,9 +21,37 @@ const checkoutForm = reactive({
 })
 const paymentMethod = ref('Credit Card')
 
+// คำนวณราคาทั้งหมด
+const totalPrice = computed(() => {
+  return props.cartItems.reduce((acc, item) => {
+    const price = Number(item.price) || 0
+    const qty = Number(item.qty || item.quantity || 1)
+    return acc + (price * qty)
+  }, 0)
+})
+
+// ดึงข้อมูล User Profile มาใส่ฟอร์ม
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem('token')
+    if (token) {
+      const res = await axios.get('http://localhost:3000/api/users/profile', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (res.data) {
+        checkoutForm.name = res.data.name || ''
+        checkoutForm.address = res.data.address || ''
+        checkoutForm.phone = res.data.phone || ''
+      }
+    }
+  } catch (err) {
+    console.error("Fetch profile failed:", err)
+  }
+})
+
 const goNext = () => {
   if (!checkoutForm.name || !checkoutForm.phone || !checkoutForm.address) {
-    alert('Please fill in all fields: Name, Phone, and Address')
+    alert('กรุณากรอกข้อมูลให้ครบถ้วน')
     return
   }
   step.value = 2
@@ -23,81 +61,131 @@ const goBack = () => {
   step.value = Math.max(1, step.value - 1)
 }
 
-const completeOrder = () => {
-  if (!paymentMethod.value) {
-    alert('Please select a payment method')
-    return
+// 3. ส่ง Order ไปบันทึกใน Backend
+const completeOrder = async () => {
+  // ตรวจสอบเบื้องต้นว่ามีสินค้าในตะกร้าไหม
+  if (props.cartItems.length === 0) {
+    alert("ไม่มีสินค้าในตะกร้า");
+    return;
   }
-  alert(`Order completed successfully!\nName: ${checkoutForm.name}\nPhone: ${checkoutForm.phone}\nAddress: ${checkoutForm.address}\nPayment: ${paymentMethod.value}`)
-  emit('close')
-}
+
+  loading.value = true;
+  try {
+    const token = localStorage.getItem('token');
+    
+    // เตรียมข้อมูลส่งไป Backend (ตรวจสอบชื่อ field ให้ตรงกับ Model ของคุณ)
+    const orderData = {
+      products: props.cartItems.map(item => ({
+        product: item._id || item.id, // ส่ง ID สินค้า
+        quantity: Number(item.qty || item.quantity || 1) // ส่งจำนวน
+      })),
+      totalPrice: totalPrice.value,
+      shippingAddress: checkoutForm.address,
+      paymentMethod: paymentMethod.value
+    };
+
+    // ตรวจสอบว่ามี product ID ครบทุกตัวไหมก่อนส่ง
+    const hasInvalidItem = orderData.products.some(p => !p.product);
+    if (hasInvalidItem) {
+      throw new Error("พบสินค้าบางรายการไม่มีรหัส (ID) กรุณาลองเพิ่มสินค้าใหม่");
+    }
+
+    // เรียก API โดยใช้ axios ตรงๆ (ระบุ URL เต็มเพื่อความชัวร์)
+    const res = await axios.post('http://localhost:3000/api/orders', orderData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (res.status === 201 || res.status === 200) {
+      alert("สั่งซื้อสำเร็จ!");
+      emit('order-success'); 
+    }
+  } catch (err) {
+    console.error("Checkout Error Detail:", err.response?.data || err.message);
+    const errorMsg = err.response?.data?.message || err.message || "ข้อมูลสินค้าไม่ถูกต้อง";
+    alert("สั่งซื้อไม่สำเร็จ: " + errorMsg);
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <template>
   <main class="checkout-page">
     <header class="checkout-header">
-      <button class="back-btn" @click="emit('close')">← Back</button>
+      <button class="back-btn" @click="emit('close')">← Back to Shop</button>
       <h1>Checkout</h1>
     </header>
+
     <section class="checkout-content">
       <div class="steps-indicator">
         <button class="step-tab" :class="{active: step === 1}" @click="step = 1">1. Customer Info</button>
         <button class="step-tab" :class="{active: step === 2}" @click="step = 2">2. Payment</button>
       </div>
+
       <div class="checkout-body">
         <div class="main-panel">
           <div v-if="step === 1" class="step-card">
-            <h2>Customer Info</h2>
-            <label>Name</label>
-            <input v-model="checkoutForm.name" placeholder="Enter your name" />
-            <label>Phone</label>
-            <input v-model="checkoutForm.phone" placeholder="Phone number" />
-            <label>Address</label>
-            <textarea v-model="checkoutForm.address" placeholder="Enter shipping address"></textarea>
-            <button class="next-btn" @click="goNext">Next</button>
+            <h2>ข้อมูลการจัดส่ง</h2>
+            <div class="form-group">
+              <label>ชื่อ-นามสกุล</label>
+              <input v-model="checkoutForm.name" placeholder="ระบุชื่อผู้รับ" />
+            </div>
+            <div class="form-group">
+              <label>เบอร์โทรศัพท์</label>
+              <input v-model="checkoutForm.phone" placeholder="ระบุเบอร์โทร" />
+            </div>
+            <div class="form-group">
+              <label>ที่อยู่จัดส่ง</label>
+              <textarea v-model="checkoutForm.address" rows="4" placeholder="ระบุที่อยู่โดยละเอียด"></textarea>
+            </div>
+            <button class="next-btn" @click="goNext">ขั้นตอนถัดไป</button>
           </div>
 
           <div v-if="step === 2" class="step-card">
-            <h2>Select Payment Method</h2>
-            <div class="payment-option">
-              <label>
-                <input type="radio" value="Credit Card" v-model="paymentMethod" />
-                <div>
-                  <strong>Credit Card</strong>
-                  <p>Safe money transfer using your bank account. Visa, Maestro, Discover, American Express.</p>
-                </div>
-              </label>
+            <h2>เลือกช่องทางการชำระเงิน</h2>
+            <div class="payment-option" :class="{selected: paymentMethod === 'Credit Card'}" @click="paymentMethod = 'Credit Card'">
+              <input type="radio" value="Credit Card" v-model="paymentMethod" />
+              <div class="payment-text">
+                <strong>Credit Card</strong>
+                <p>รองรับ Visa, Mastercard, JCB</p>
+              </div>
             </div>
-            <div class="payment-option">
-              <label>
-                <input type="radio" value="PayPal" v-model="paymentMethod" />
-                <div>
-                  <strong>PayPal</strong>
-                  <p>You will be redirected to PayPal website to complete your purchase securely.</p>
-                </div>
-              </label>
+
+            <div class="payment-option" :class="{selected: paymentMethod === 'PayPal'}" @click="paymentMethod = 'PayPal'">
+              <input type="radio" value="PayPal" v-model="paymentMethod" />
+              <div class="payment-text">
+                <strong>PayPal</strong>
+                <p>ชำระผ่านบัญชี PayPal ของคุณ</p>
+              </div>
             </div>
+
             <div class="checkout-actions">
-              <button class="back-btn-step" @click="goBack">Back</button>
-              <button class="complete-btn" @click="completeOrder">Complete Order</button>
+              <button class="back-btn-step" @click="goBack" :disabled="loading">ย้อนกลับ</button>
+              <button class="complete-btn" @click="completeOrder" :disabled="loading">
+                {{ loading ? 'กำลังประมวลผล...' : 'ยืนยันการสั่งซื้อ' }}
+              </button>
             </div>
           </div>
         </div>
 
         <aside class="summary-panel">
           <div class="summary-card">
-            <h3>Order Summary</h3>
-            <div class="summary-item">
-              <img :src="heroImage" alt="Product" class="summary-image" />
+            <h3>สรุปรายการสั่งซื้อ</h3>
+            <div v-for="(item, index) in props.cartItems" :key="index" class="summary-item">
+              <img :src="item.image || 'https://via.placeholder.com/80'" alt="Product" class="summary-image" />
               <div class="summary-item-info">
-                <p class="summary-product">Jinhsi 1/7 Scale</p>
-                <p class="summary-price">499 $</p>
+                <p class="summary-product">{{ item.name }}</p>
+                <p class="summary-price">{{ item.price }} $ <span>x {{ item.qty || item.quantity || 1 }}</span></p>
               </div>
             </div>
-            <p><strong>Shipping:</strong> Free</p>
+            
+            <div class="summary-details">
+              <p><span>ค่าจัดส่ง:</span> <span class="free">ฟรี</span></p>
+            </div>
+
             <div class="summary-total">
-              <span>Total</span>
-              <strong>499 $</strong>
+              <span>ยอดรวมทั้งสิ้น</span>
+              <strong>{{ totalPrice }} $</strong>
             </div>
           </div>
         </aside>
@@ -107,44 +195,42 @@ const completeOrder = () => {
 </template>
 
 <style scoped>
-.checkout-page {min-height:100vh;background:#f5f9ff;color:#1f2937;box-sizing:border-box;}
-.checkout-header {display:flex;align-items:center;gap:15px;padding:16px 20px;background:#9edaff;}
-.checkout-header h1 {margin:0;}
-.back-btn {border:none;background:white;padding:8px 12px;border-radius:6px;cursor:pointer;}
+.checkout-page { min-height: 100vh; background: #f8fafc; color: #1e293b; padding-bottom: 50px; }
+.checkout-header { display: flex; align-items: center; gap: 15px; padding: 1rem 5%; background: #ffffff; border-bottom: 1px solid #e2e8f0; }
+.back-btn { border: 1px solid #e2e8f0; background: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
 
-.checkout-content {max-width:1050px;margin:20px auto;padding:0 20px 30px;box-sizing:border-box;}
-.steps-indicator {display:flex;gap:12px;margin-bottom:22px;justify-content:center;}
-.step-tab {border:1px solid #cbd5e1;border-radius:999px;padding:10px 16px;background:#f0f4f8;font-size:.95rem;font-weight:600;color:#64748b;cursor:pointer;min-width:160px;text-align:center;}
-.step-tab.active {background:#22d3ee;color:#0f172a;border-color:#22d3ee;}
+.checkout-content { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+.steps-indicator { display: flex; gap: 15px; margin-bottom: 30px; justify-content: center; }
+.step-tab { border: 1px solid #e2e8f0; border-radius: 30px; padding: 10px 25px; background: white; color: #64748b; font-weight: 600; cursor: pointer; }
+.step-tab.active { background: #0ea5e9; color: white; border-color: #0ea5e9; }
 
-.checkout-body {display:flex;gap:22px;align-items:flex-start;box-sizing:border-box;}
-.main-panel {flex:2.3;}
-.summary-panel {flex:1;}
+.checkout-body { display: flex; gap: 30px; align-items: flex-start; }
+.main-panel { flex: 1.5; }
+.summary-panel { flex: 1; position: sticky; top: 20px; }
 
-.summary-card {background:#fff;border:1px solid #cbd5e1;border-radius:12px;padding:16px;box-shadow:0 6px 16px rgba(15,23,42,.09);box-sizing:border-box;}
-.summary-card h3 {margin:0 0 14px;color:#0f172a;}
-.summary-item {display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.summary-image {width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid #cbd5e1;}
-.summary-item-info {display:flex;flex-direction:column;}
-.summary-product {margin:0;font-weight:700;color:#0f172a;}
-.summary-price {margin:2px 0 0;color:#334155;font-weight:600;}
-.summary-total {display:flex;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px dashed #cbd5e1;}
+.step-card, .summary-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-.step-card {background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:18px;box-shadow:0 8px 18px rgba(0,0,0,.08);box-sizing:border-box;}
-.step-card h2 {margin-top:0;}
-.step-card label {margin-top:10px;display:block;font-weight:600;text-align:left;}
-.step-card input, .step-card textarea {width:100%;margin-top:6px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:6px;text-align:left;box-sizing:border-box;}
-.step-card textarea {min-height:80px;resize:vertical;}
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #475569; }
+.form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; }
 
-.payment-option {border:1px solid #cbd5e1;border-radius:10px;padding:12px;margin-top:10px;box-sizing:border-box;display:flex;align-items:flex-start;padding-left:2px;}
-.payment-option label {display:flex;gap:10px;align-items:center;width:100%;margin:0;}
-.payment-option div {margin:0;}
-.payment-option input[type='radio'] {margin-top:0;}
-.payment-option strong {display:block;font-size:1.1rem;font-weight:700;margin-bottom:4px;color:#0f172a;}
-.payment-option div p {margin:0;font-size:0.95rem;color:#475569;line-height:1.5;}
+.next-btn, .complete-btn { width: 100%; margin-top: 25px; padding: 14px; background: #0f172a; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+.complete-btn:disabled { background: #94a3b8; }
 
-.checkout-actions {display:flex;justify-content:space-between;margin-top:18px;}
-.back-btn-step,.next-btn,.complete-btn {border:none;border-radius:8px;padding:10px 18px;cursor:pointer;font-weight:bold;}
-.next-btn,.complete-btn {background:#0369a1;color:white;}
-.back-btn-step {background:#e5e7eb;color:#1f2937;}
+.payment-option { display: flex; gap: 15px; padding: 16px; border: 2px solid #e2e8f0; border-radius: 12px; margin-top: 12px; cursor: pointer; }
+.payment-option.selected { border-color: #0ea5e9; background: #f0f9ff; }
+
+.summary-item { display: flex; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; }
+.summary-image { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+.summary-product { font-weight: 700; margin: 0; }
+.summary-total { display: flex; justify-content: space-between; font-size: 1.2rem; margin-top: 15px; padding-top: 15px; border-top: 2px solid #f1f5f9; }
+.free { color: #10b981; font-weight: 700; }
+
+.checkout-actions { display: flex; gap: 15px; }
+.back-btn-step { flex: 0.5; margin-top: 25px; padding: 14px; background: #f1f5f9; border: none; border-radius: 8px; cursor: pointer; }
+
+@media (max-width: 768px) {
+  .checkout-body { flex-direction: column; }
+  .summary-panel { width: 100%; position: static; }
+}
 </style>
