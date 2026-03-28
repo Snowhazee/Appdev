@@ -9,6 +9,7 @@ import CartPage from './CartPage.vue'
 import ProductPage from './ProductPage.vue'
 import SeeAllPage from './SeeAllPage.vue'
 import CheckoutPage from './CheckoutPage.vue'
+import OrderTrackingPage from './OrderTrackingPage.vue'
 import api from './services/api'
 
 const props = defineProps({
@@ -181,10 +182,11 @@ function removeFromCart(productId) {
 
       <AccountPage v-else-if="currentPage === 'account'" @close="changePage('home')" @goRegister="changePage('register')" />
       <Register v-else-if="currentPage === 'register'" @back="changePage('account')" />
-      <CartPage v-else-if="currentPage === 'cart'" :cart="cart" @remove="removeFromCart" @close="changePage('home')" />
+      <CartPage v-else-if="currentPage === 'cart'" :cart="cart" @remove="removeFromCart" @close="changePage('home')" @checkout="changePage('checkout')" @track-order="changePage('tracking')" />
       <ProductPage v-else-if="currentPage === 'product'" :product="{ _id: 6, title: 'Jinhsi', subtitle: '1/7 Scale', price: '499 $' }" :onAddToCart="addToCart" @close="changePage('home')" @open-see-all="changePage('seeall')" @open-checkout="changePage('checkout')" />
       <CheckoutPage v-else-if="currentPage === 'checkout'" @close="changePage('home')" />
       <SeeAllPage v-else-if="currentPage === 'seeall'" :products="filteredProducts" :search="search" @close="changePage('home')" @open-product="changePage('product')" />
+      <OrderTrackingPage v-else-if="currentPage === 'tracking'" @close="changePage('home')" />
 
     </div>
   </div>
