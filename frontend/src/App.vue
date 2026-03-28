@@ -142,29 +142,153 @@ function handleAccount() {
 </template>
 
 <style>
-/* Style เดิมที่ใช้ร่วมกัน */
-body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: #2c2c2c; }
+/* --- Global & Reset --- */
+body { 
+  margin: 0; 
+  padding: 0; 
+  font-family: Arial, sans-serif; 
+  background: #2c2c2c; 
+  overflow-x: hidden; /* ป้องกันหน้าจอเลื่อนซ้ายขวา */
+}
+
+/* --- Layout Structure --- */
 .container { width: 100%; }
-.app-wrapper { max-width: 1280px; margin: 0 auto; background: #EAEAEA; width: 100%; min-height: 100vh; }
-.navbar { position: relative; display: flex; align-items: center; padding: 20px; background: #9EDAFF; color: black; }
-.logo { font-weight: bold; font-size: 28px; margin: 0; }
-.search-box { position: absolute; left: 50%; transform: translateX(-50%); }
-.search { width: 280px; padding: 10px 14px; border: 1px solid black; background: transparent; }
-.icons { margin-left: auto; display: flex; gap: 15px; align-items: center; }
-.icon-btn { background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; }
-.icon-btn img { width: 24px; height: 24px; }
-.main-content { display: flex; flex-direction: column; }
-.hero-banner { width: 100%; height: 280px; }
-.hero-banner img { width: 100%; height: 100%; object-fit: cover; }
-.section { padding: 20px 0; width: 100%; }
+
+.app-wrapper { 
+  max-width: 1280px; 
+  margin: 0 auto; 
+  background: #EAEAEA; 
+  width: 100%; 
+  min-height: 100vh; 
+  box-sizing: border-box;
+}
+
+/* --- Navbar (Responsive) --- */
+.navbar { 
+  display: flex; 
+  flex-wrap: wrap; /* ให้สลับแถวได้ในมือถือ */
+  align-items: center; 
+  justify-content: space-between;
+  padding: 15px 20px; 
+  background: #9EDAFF; 
+  color: black; 
+  gap: 15px;
+}
+
+.logo { font-weight: bold; font-size: 24px; margin: 0; flex-shrink: 0; }
+
+.search-box { 
+  order: 3; /* ในมือถือให้ย้ายช่อง Search ลงมาแถวล่าง */
+  width: 100%; 
+  display: flex; 
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .search-box { 
+    order: 2; 
+    width: auto; 
+    position: absolute; 
+    left: 50%; 
+    transform: translateX(-50%); 
+  }
+}
+
+.search { 
+  width: 100%; 
+  max-width: 400px; 
+  padding: 10px 14px; 
+  border: 1px solid black; 
+  border-radius: 20px; /* เพิ่มความโค้งมนให้ดู Modern */
+  background: white; 
+}
+
+.icons { 
+  order: 2; 
+  display: flex; 
+  gap: 15px; 
+  align-items: center; 
+}
+
+@media (min-width: 768px) { .icons { order: 3; } }
+
+/* --- Hero Banner (Resolution Balance) --- */
+.hero-banner { 
+  width: 100%; 
+  height: clamp(180px, 30vw, 350px); /* ปรับความสูงตามขนาดจออัตโนมัติ */
+  overflow: hidden;
+}
+
+.hero-banner img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; /* ✅ รูปไม่เบี้ยวแน่นอน */
+  object-position: center;
+}
+
+/* --- Sections --- */
+.section { padding: 30px 0; width: 100%; }
 .section-blue { background-color: #BEE3FF; }
 .section-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.product-grid { display: grid; gap: 15px; }
-.grid-4 { grid-template-columns: repeat(4, 1fr); }
-.product-card { display: flex; flex-direction: column; background: white; padding: 10px; border-radius: 8px; }
-.card-img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 4px; }
-.clickable { cursor: pointer; transition: 0.2s; }
-.clickable:hover { transform: scale(1.02); }
-.add-small-btn { margin-top: 10px; padding: 8px; cursor: pointer; background: #0ea5e9; color: white; border: none; border-radius: 4px; font-weight: bold; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+/* --- Product Grid (The Master Solution) --- */
+.product-grid { 
+  display: grid; 
+  gap: 20px; 
+  /* ✅ ปรับจำนวนคอลัมน์อัตโนมัติ: มือถือ 2, คอม 4 */
+  grid-template-columns: repeat(2, 1fr); 
+}
+
+@media (min-width: 768px) {
+  .product-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .product-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* --- Product Card & Image Resolution --- */
+.product-card { 
+  display: flex; 
+  flex-direction: column; 
+  background: white; 
+  padding: 12px; 
+  border-radius: 12px; 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: 0.3s;
+}
+
+.product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+/* ✅ จัดการรูป "ตา" หรือรูปสินค้าให้สมดุล */
+.card-img { 
+  width: 100%; 
+  aspect-ratio: 1 / 1; /* ✅ บังคับเป็นสี่เหลี่ยมจัตุรัสให้สมดุลที่สุด */
+  object-fit: cover;   /* ✅ ตัดขอบรูปส่วนเกินออก ไม่ให้รูปโดนยืดหรือแบน */
+  border-radius: 8px; 
+  background: #f0f0f0;
+}
+
+.card-info { padding: 10px 0 0; display: flex; flex-direction: column; flex-grow: 1; }
+.card-title { font-weight: bold; font-size: 15px; margin: 0; color: #333; height: 2.4em; overflow: hidden; }
+.card-price { color: #0ea5e9; font-weight: bold; margin: 8px 0; font-size: 16px; }
+
+.add-small-btn { 
+  margin-top: auto; 
+  padding: 10px; 
+  cursor: pointer; 
+  background: #0ea5e9; 
+  color: white; 
+  border: none; 
+  border-radius: 6px; 
+  font-weight: bold; 
+  transition: 0.2s;
+}
+
+.add-small-btn:hover { background: #0284c7; }
+
+.icon-btn { background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; }
+.icon-btn img { width: 24px; height: 24px; }
+.see-all-btn { background: white; border: 1px solid #0ea5e9; color: #0ea5e9; padding: 6px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; }
 </style>
