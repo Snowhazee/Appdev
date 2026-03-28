@@ -105,10 +105,10 @@ async function fetchData() {
 </template>
 
 <style scoped>
-/* Style ของคุณดีอยู่แล้วครับ ผมคงไว้ทั้งหมด */
+
 .acc-wrapper { width: 100%; min-height: 100vh; background: #EAEAEA; }
 .acc-header-banner { background: #9EDAFF; padding: 40px 20px; text-align: center; position: relative; }
-.btn-back { position: absolute; top: 15px; left: 15px; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; background: #fff; font-weight: bold; }
+.btn-back { position: absolute; top: 15px; left: 15px; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; background: #fff; font-weight: bold; color: #000; }
 .acc-title { font-size: 32px; margin: 0; color: #fff; }
 .acc-main-container { width: 90%; max-width: 450px; margin: -20px auto 0; position: relative; z-index: 10; }
 .acc-tabs-group { display: flex; gap: 2px; }

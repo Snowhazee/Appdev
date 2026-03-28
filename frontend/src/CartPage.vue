@@ -43,7 +43,7 @@ const totalAmount = computed(() => {
           <button class="remove-btn" @click="emit('remove-item', item._id || item.id)">Remove</button>
         </div>
         <div class="cart-summary">
-          <h2>Total: ${{ totalAmount }}</h2>
+          <h2>Total: {{ totalAmount }}฿</h2>
           <button class="checkout-btn" @click="proceedToCheckout">Proceed to Checkout</button>
         </div>
       </div>

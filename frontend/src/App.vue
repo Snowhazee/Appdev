@@ -175,7 +175,7 @@ body {
   gap: 15px;
 }
 
-.logo { font-weight: bold; font-size: 24px; margin: 0; flex-shrink: 0; }
+.logo { font-weight: bold; font-size: 32px; margin: 0; flex-shrink: 0; }
 
 .search-box { 
   order: 3; /* ในมือถือให้ย้ายช่อง Search ลงมาแถวล่าง */
