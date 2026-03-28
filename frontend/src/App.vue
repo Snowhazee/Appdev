@@ -201,6 +201,7 @@ body {
   border: 1px solid black; 
   border-radius: 20px; /* เพิ่มความโค้งมนให้ดู Modern */
   background: white; 
+  color: black;
 }
 
 .icons { 
@@ -271,7 +272,7 @@ body {
 }
 
 .card-info { padding: 10px 0 0; display: flex; flex-direction: column; flex-grow: 1; }
-.card-title { font-weight: bold; font-size: 15px; margin: 0; color: #333; height: 2.4em; overflow: hidden; }
+.card-title { font-weight: bold; font-size: 15px; margin: 0; color: #333; height: 3em; overflow: hidden;line-height: 1; }
 .card-price { color: #0ea5e9; font-weight: bold; margin: 8px 0; font-size: 16px; }
 
 .add-small-btn { 

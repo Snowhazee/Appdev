@@ -86,11 +86,11 @@ const handleLogin = async () => {
 .login-page { display: flex; height: 100vh; font-family: Arial, sans-serif; }
 .left { flex: 1; background: #8db9d3; display: flex; align-items: center; justify-content: center; }
 .logo { background: white; border-radius: 50%; padding: 50px; box-shadow: 0 0 0 10px #6f97d6; }
-.logo h1 { font-size: 40px; color: black; margin: 0; }
+.logo h1 { font-size: 40px; color: black; }
 .right { flex: 1; display: flex; align-items: center; justify-content: center; background: #f2f2f2; }
 .card { width: 350px; background: #eee; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 8px; }
 .card h1 { text-align: center; margin-bottom: 20px; color: black; }
-.card label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; }
+.card label { display: block; margin-top: 15px; font-size: 20px; color: #6b6b6b; }
 .card input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
 .card button { margin-top: 25px; width: 100%; padding: 12px; background: #8db9d3; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
 .card button:hover { background: #6f97d6; }
@@ -99,4 +99,39 @@ const handleLogin = async () => {
 .link { color: #8db9d3; cursor: pointer; font-weight: bold; text-decoration: underline; }
 .link:hover { color: #6f97d6; }
 p { text-align: center; margin-top: 20px; font-size: 14px; }
+.card p {
+  color: #5a5a5a; 
+  text-align: center; 
+  margin-top: 20px; 
+}
+@media (max-width: 768px) {
+  .login-page {
+    flex-direction: column; /* เปลี่ยนให้เรียงจากบนลงล่าง */
+  }
+  
+  .left {
+    flex: none; /* ยกเลิกการแบ่งครึ่ง 50% */
+    height: 30vh; /* ให้กล่องโลโก้กินพื้นที่แค่ 30% ของความสูงจอ */
+  }
+
+  .logo {
+    padding: 30px; /* ย่อขนาดกล่องวงกลมลงหน่อย */
+    box-shadow: 0 0 0 6px #6f97d6;
+  }
+
+  .logo h1 {
+    font-size: 28px; /* ย่อตัวหนังสือโลโก้ลง */
+  }
+
+  .right {
+    flex: 1; /* ให้กล่องแบบฟอร์มกินพื้นที่ที่เหลือทั้งหมด */
+    padding: 20px; /* เพิ่มระยะห่างขอบจอนิดนึง */
+    align-items: flex-start; /* ดันกล่องขึ้นไปด้านบนนิดหน่อย จะได้พิมพ์ถนัดๆ */
+    padding-top: 40px; 
+  }
+
+  .card {
+    padding: 25px 20px; /* ลด padding ด้านในกล่องลงนิดนึงสำหรับมือถือ */
+  }
+}
 </style>

@@ -191,34 +191,83 @@ const getImageUrl = (item) => {
 </template>
 
 <style scoped>
-/* สไตล์ยังคงเดิมเพื่อให้การแสดงผลเหมือนเดิม */
 .checkout-page { min-height: 100vh; background: #f8fafc; color: #1e293b; padding-bottom: 50px; }
-.checkout-header { display: flex; align-items: center; gap: 15px; padding: 1rem 5%; background: #ffffff; border-bottom: 1px solid #e2e8f0; }
-.back-btn { border: 1px solid #e2e8f0; background: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+.checkout-header { display: flex; align-items: center; gap: 15px; padding: 1rem 5%; background: #8db9d3; border-bottom: 1px solid #e2e8f0; color: white;}
+.checkout-header h1 { margin: 0; }
+
+/* 1. ปุ่ม Back to Shop ตัวหนังสือสีดำ */
+.back-btn { border: 1px solid #e2e8f0; background: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; color: #000000; font-weight: 500; }
+
 .checkout-content { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
 .steps-indicator { display: flex; gap: 15px; margin-bottom: 30px; justify-content: center; }
 .step-tab { border: 1px solid #e2e8f0; border-radius: 30px; padding: 10px 25px; background: white; color: #64748b; font-weight: 600; cursor: pointer; }
 .step-tab.active { background: #0ea5e9; color: white; border-color: #0ea5e9; }
+
 .checkout-body { display: flex; gap: 30px; align-items: flex-start; }
 .main-panel { flex: 1.5; }
 .summary-panel { flex: 1; position: sticky; top: 20px; }
+
 .step-card, .summary-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+/* 3. คำว่าข้อมูลการจัดส่งเป็นสีดำ */
+.step-title { color: #000000; margin-top: 0; margin-bottom: 20px; text-align: center; }
+
+/* จัดข้อความ label ตามรูปภาพอ้างอิง */
 .form-group { margin-bottom: 15px; }
-.form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #475569; }
-.form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; }
-.next-btn, .complete-btn { width: 100%; margin-top: 25px; padding: 14px; background: #0f172a; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+.form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #1e293b; text-align: center; }
+
+/* 2. กล่องข้อความยาวเท่ากับปุ่ม (เพิ่ม box-sizing) */
+.form-group input, .form-group textarea { 
+  width: 100%; 
+  padding: 12px; 
+  border: 1px solid #cbd5e1; 
+  border-radius: 8px; 
+  box-sizing: border-box; 
+}
+
+/* 2. จัดการเรื่องความกว้างปุ่ม (เพิ่ม box-sizing) */
+.next-btn, .complete-btn { 
+  width: 100%; 
+  margin-top: 25px; 
+  padding: 14px; 
+  background: #0f172a; 
+  color: white; 
+  border: none; 
+  border-radius: 8px; 
+  font-weight: 700; 
+  cursor: pointer; 
+  box-sizing: border-box;
+}
 .complete-btn:disabled { background: #94a3b8; }
+
 .payment-option { display: flex; gap: 15px; padding: 16px; border: 2px solid #e2e8f0; border-radius: 12px; margin-top: 12px; cursor: pointer; }
 .payment-option.selected { border-color: #0ea5e9; background: #f0f9ff; }
+
 .summary-item { display: flex; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; }
-.summary-image { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; background: #f1f5f9; }
+.summary-image { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
 .summary-product { font-weight: 700; margin: 0; }
 .summary-total { display: flex; justify-content: space-between; font-size: 1.2rem; margin-top: 15px; padding-top: 15px; border-top: 2px solid #f1f5f9; }
 .free { color: #10b981; font-weight: 700; }
+
 .checkout-actions { display: flex; gap: 15px; }
-.back-btn-step { flex: 0.5; margin-top: 25px; padding: 14px; background: #f1f5f9; border: none; border-radius: 8px; cursor: pointer; }
+.back-btn-step { flex: 0.5; margin-top: 25px; padding: 14px; background: #777777; border: none; border-radius: 8px; cursor: pointer; box-sizing: border-box; }
+
 @media (max-width: 768px) {
   .checkout-body { flex-direction: column; }
   .summary-panel { width: 100%; position: static; }
+}
+
+.step-card h2 {
+  color: #000000;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.summary-card h3 {
+  color: #000000;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 20px;
 }
 </style>

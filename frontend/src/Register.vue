@@ -86,9 +86,27 @@ const handleRegister = async () => {
 .right { flex: 1; display: flex; align-items: center; justify-content: center; background: #f2f2f2; }
 .card { width: 350px; background: #eee; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 .card h1 { text-align: center; margin-bottom: 20px; color: black; }
-.card label { display: block; margin-top: 10px; }
-.card input { width: 100%; padding: 8px; margin-top: 5px; }
-.card button { margin-top: 20px; width: 100%; padding: 10px; background: #8db9d3; border: none; cursor: pointer; font-weight: bold; }
-.back-button { background: transparent; border: none; cursor: pointer; margin-bottom: 10px; color: #666; }
+.card label { display: block; margin-top: 10px;color: #6b6b6b; }
+.card input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  box-sizing: border-box;
+}
+
+.card button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  background: #8db9d3;
+  border: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
 .card span { color: #8db9d3; cursor: pointer; font-weight: bold; }
+.card p {
+  color: #5a5a5a;
+  text-align: center;
+  margin-top: 20px;
+}
 </style>
