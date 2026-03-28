@@ -10,8 +10,8 @@ import SeeAllPage from './SeeAllPage.vue'
 import Login from './Login.vue'
 import Register from './Register.vue'
 import AccountPage from './AccountPage.vue'
-import CheckoutPage from './CheckoutPage.vue' // ✅ เพิ่มอันนี้
-import api from './services/api'
+import CheckoutPage from './CheckoutPage.vue' 
+import api from './services/api' // ✅ ตรวจสอบว่า Path นี้ถูกต้อง
 
 const selectedProduct = ref(null)
 const currentPage = ref('home')
@@ -19,7 +19,6 @@ const search = ref('')
 const cart = ref([])
 const products = ref([])
 
-// เช็คสถานะ Login จาก Token ในเครื่อง
 const isLoggedIn = ref(!!localStorage.getItem('token'))
 
 onMounted(async () => {
@@ -44,7 +43,7 @@ function handleLogout() {
 
 const filteredProducts = computed(() => {
   return products.value.filter(product =>
-    product.title.toLowerCase().includes(search.value.toLowerCase())
+    (product.title || '').toLowerCase().includes(search.value.toLowerCase())
   )
 })
 
@@ -64,7 +63,6 @@ function addToCart(product) {
   if (existingItem) {
     existingItem.quantity = (existingItem.quantity || 1) + 1
   } else {
-    // เก็บชื่อเป็น title หรือ name ตามที่ Backend ส่งมา
     cart.value.push({ ...product, quantity: 1, name: product.title }) 
   }
   alert('Added to cart!')
@@ -131,57 +129,20 @@ function handleAccount() {
         </main>
       </template>
 
-      <CheckoutPage 
-        v-else-if="currentPage === 'checkout'" 
-        :cartItems="cart" 
-        @close="currentPage = 'home'"
-        @order-success="() => { cart = []; currentPage = 'account'; }" 
-      />
-
-      <CartPage 
-        v-else-if="currentPage === 'cart'" 
-        :cartItems="cart" 
-        @remove-item="removeFromCart" 
-        @close="changePage('home')" 
-        @clear-cart="cart = []"
-        @go-checkout="currentPage = 'checkout'" 
-      />
-
-      <ProductPage 
-        v-else-if="currentPage === 'product'" 
-        :product="selectedProduct" 
-        @add-to-cart="addToCart" 
-        @close="changePage('home')" 
-      />
-      
-      <Login 
-        v-else-if="currentPage === 'login'" 
-        @back="changePage('home')" 
-        @go-register="changePage('register')" 
-        @login-success="onLoginSuccess"
-      />
-      
+      <CheckoutPage v-else-if="currentPage === 'checkout'" :cartItems="cart" @close="currentPage = 'home'" @order-success="() => { cart = []; currentPage = 'account'; }" />
+      <CartPage v-else-if="currentPage === 'cart'" :cartItems="cart" @remove-item="removeFromCart" @close="changePage('home')" @clear-cart="cart = []" @go-checkout="currentPage = 'checkout'" />
+      <ProductPage v-else-if="currentPage === 'product'" :product="selectedProduct" @add-to-cart="addToCart" @close="changePage('home')" />
+      <Login v-else-if="currentPage === 'login'" @back="changePage('home')" @go-register="changePage('register')" @login-success="onLoginSuccess" />
       <Register v-else-if="currentPage === 'register'" @back="changePage('login')" />
-
-      <AccountPage 
-        v-else-if="currentPage === 'account'" 
-        @close="changePage('home')" 
-        @logout="handleLogout"
-      />
-
-      <SeeAllPage 
-        v-else-if="currentPage === 'seeall'" 
-        :products="filteredProducts" 
-        :search="search" 
-        @close="changePage('home')" 
-        @open-product="openProduct" 
-      />
+      <AccountPage v-else-if="currentPage === 'account'" @close="changePage('home')" @logout="handleLogout" />
+      <SeeAllPage v-else-if="currentPage === 'seeall'" :products="filteredProducts" :search="search" @close="changePage('home')" @open-product="openProduct" />
 
     </div>
   </div>
 </template>
 
 <style>
+/* Style เดิมที่ใช้ร่วมกัน */
 body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: #2c2c2c; }
 .container { width: 100%; }
 .app-wrapper { max-width: 1280px; margin: 0 auto; background: #EAEAEA; width: 100%; min-height: 100vh; }
@@ -201,9 +162,9 @@ body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: #2c2c2
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 .product-grid { display: grid; gap: 15px; }
 .grid-4 { grid-template-columns: repeat(4, 1fr); }
-.product-card { display: flex; flex-direction: column; }
-.card-img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+.product-card { display: flex; flex-direction: column; background: white; padding: 10px; border-radius: 8px; }
+.card-img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 4px; }
 .clickable { cursor: pointer; transition: 0.2s; }
 .clickable:hover { transform: scale(1.02); }
-.add-small-btn { margin-top: 10px; padding: 5px; cursor: pointer; background: #3b82f6; color: white; border: none; }
+.add-small-btn { margin-top: 10px; padding: 8px; cursor: pointer; background: #0ea5e9; color: white; border: none; border-radius: 4px; font-weight: bold; }
 </style>
