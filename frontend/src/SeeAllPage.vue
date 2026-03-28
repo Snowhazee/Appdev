@@ -32,15 +32,15 @@ const filteredProducts = computed(() => {
     <section class="products-grid">
       <div
         v-for="product in filteredProducts"
-        :key="product.id"
+        :key="product._id" 
         class="product-card"
-        @click="emit('open-product')"
+        @click="emit('open-product', product)" 
       >
-        <img :src="product.image" :alt="product.title" class="card-img" />
+        <img :src="product.imageUrl" :alt="product.title" class="card-img" />
+        
         <div class="card-info">
           <p class="card-title">{{ product.title }}</p>
-          <p class="card-subtitle">{{ product.subtitle }}</p>
-          <p class="card-price">{{ product.price }}</p>
+          <p class="card-price">{{ product.price?.toLocaleString() }} บาท</p>
         </div>
       </div>
 
@@ -52,84 +52,17 @@ const filteredProducts = computed(() => {
 </template>
 
 <style scoped>
-.see-all-page {
-  padding: 20px;
-  background: #9EDAFF;
-  min-height: 100vh;
-}
-
-.top-bar {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.back-btn {
-  background: transparent;
-  border: 1px solid #666;
-  padding: 6px 10px;
-  cursor: pointer;
-}
-
-.count {
-  margin-left: auto;
-  font-size: 0.9rem;
-  color: #333;
-}
-
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-}
-
-.product-card {
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  overflow: hidden;
-  background: #f8f8f8;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.product-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-}
-
-.card-img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.card-info {
-  padding: 12px;
-}
-
-.card-title {
-  margin: 0 0 4px;
-  font-weight: bold;
-}
-
-.card-subtitle {
-  margin: 0 0 6px;
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.card-price {
-  margin: 0;
-  color: #333;
-  font-weight: bold;
-}
-
-.empty-state {
-  grid-column: 1 / -1;
-  text-align: center;
-  color: #777;
-  padding: 30px 0;
-}
+/* Style เดิมของคุณใช้ได้เลยครับ */
+.see-all-page { padding: 20px; background: #9EDAFF; min-height: 100vh; }
+.top-bar { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+.back-btn { background: transparent; border: 1px solid #666; padding: 6px 10px; cursor: pointer; }
+.count { margin-left: auto; font-size: 0.9rem; color: #333; }
+.products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+.product-card { border: 1px solid #ddd; border-radius: 6px; overflow: hidden; background: #f8f8f8; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.product-card:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1); }
+.card-img { width: 100%; height: 180px; object-fit: cover; background: #ccc; }
+.card-info { padding: 12px; }
+.card-title { margin: 0 0 4px; font-weight: bold; }
+.card-price { margin: 0; color: #333; font-weight: bold; }
+.empty-state { grid-column: 1 / -1; text-align: center; color: #777; padding: 30px 0; }
 </style>

@@ -3,20 +3,15 @@ import { ref, computed, onMounted } from 'vue'
 import cartIcon from './assets/cart.png'
 import accountIcon from './assets/account.png'
 import heroImg from './assets/placeholder.jpg' 
-import AccountPage from './AccountPage.vue'
-import Login from './Login.vue'
-import Register from './Register.vue'
 import CartPage from './CartPage.vue'
 import ProductPage from './ProductPage.vue'
 import SeeAllPage from './SeeAllPage.vue'
-import CheckoutPage from './CheckoutPage.vue'
+import Login from './Login.vue'
+import Register from './Register.vue'
 import api from './services/api'
 
-const props = defineProps({
-  title: String
-})
 const selectedProduct = ref(null)
-const currentPage = ref(localStorage.getItem('page') || 'home')
+const currentPage = ref('home') // เปลี่ยนให้เริ่มที่ home เสมอเพื่อป้องกันข้อมูลสินค้าหาย
 const search = ref('')
 const cart = ref([])
 const products = ref([])
@@ -39,24 +34,27 @@ const filteredProducts = computed(() => {
 
 function openProduct(product) {
   selectedProduct.value = product
-  changePage('product')
+  currentPage.value = 'product'
 }
 
 function changePage(page) {
   currentPage.value = page
-  localStorage.setItem('page', page)
 }
 
 function addToCart(product) {
-  const existingItem = cart.value.find(item => item._id === product._id)
+  const productId = product._id || product.id
+  const existingItem = cart.value.find(item => (item._id || item.id) === productId)
+  
   if (existingItem) {
     existingItem.quantity = (existingItem.quantity || 1) + 1
   } else {
     cart.value.push({ ...product, quantity: 1 })
   }
+  alert('Added to cart!')
 }
+
 function removeFromCart(productId) {
-  cart.value = cart.value.filter(item => item.id !== productId)
+  cart.value = cart.value.filter(item => (item._id || item.id) !== productId)
 }
 
 function handleAccount() {
@@ -74,23 +72,15 @@ function handleAccount() {
       
       <template v-if="currentPage === 'home'">
         <header class="navbar">
-          <h1 class="logo">Fahhh</h1>
-
+          <h1 class="logo" @click="changePage('home')" style="cursor:pointer">Fahhh</h1>
           <div class="search-box">
-            <input
-              type="text"
-              placeholder="Search product..."
-              v-model="search"
-              class="search"
-            />
+            <input type="text" placeholder="Search product..." v-model="search" class="search" />
           </div>
-
           <div class="icons">
             <button class="icon-btn" @click="changePage('cart')">
               <img :src="cartIcon" alt="cart" />
-              Cart
+              Cart ({{ cart.length }})
             </button>
-
             <button class="icon-btn" @click="handleAccount">
               <img :src="accountIcon" alt="account" />
               Account
@@ -99,7 +89,6 @@ function handleAccount() {
         </header>
 
         <main class="main-content">
-          
           <div class="hero-banner">
             <img :src="heroImg" alt="Hero Banner" />
           </div>
@@ -111,100 +100,42 @@ function handleAccount() {
                 <button class="see-all-btn" @click="changePage('seeall')">See All</button>
               </div>
               <div class="product-grid grid-4">
-                <div class="product-card" v-for="product in filteredProducts.slice(0, 8)" :key="'featured-'+product._id">
-                  <img :src="product.imageUrl" alt="Product" class="card-img clickable" @click="changePage('product')" />
+                <div class="product-card" v-for="product in filteredProducts.slice(0, 8)" :key="product._id">
+                  <img :src="product.imageUrl" class="card-img clickable" @click="openProduct(product)" />
                   <div class="card-info">
                     <p class="card-title">{{ product.title }}</p>
-                    <p class="card-subtitle">{{ product.category }}</p>
-                    <p class="card-price">{{ product.price }} บาท</p>
+                    <p class="card-price">{{ product.price?.toLocaleString() }} บาท</p>
+                    <button @click="addToCart(product)" class="add-small-btn">Add to Cart</button>
                   </div>
                 </div>
               </div>
             </div>
           </section>
-
-          <section class="section section-white">
-            <div class="section-inner">
-              <div class="section-header">
-                <h2>Best Seller</h2>
-                <button class="see-all-btn" @click="changePage('seeall')">See All</button>
-              </div>
-              <div class="best-seller-layout">
-                <div class="bs-left">
-                  <img :src="heroImg" alt="Best Seller" class="clickable" @click="changePage('product')" />
-                </div>
-                <div class="bs-right grid-smaller"> 
-                  <div class="product-card" v-for="product in filteredProducts.slice(0, 6)" :key="'bestseller-'+product._id">
-                    <img :src="product.imageUrl" alt="Product" class="card-img clickable" @click="changePage('product')" />
-                    <div class="card-info">
-                      <p class="card-title">{{ product.title }}</p>
-                      <p class="card-subtitle">{{ product.category }}</p>
-                      <p class="card-price">{{ product.price }} บาท</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="section section-blue">
-            <div class="section-inner">
-              <div class="section-header">
-                <h2>Product</h2>
-                <button class="see-all-btn" @click="changePage('seeall')">See All</button>
-              </div>
-              <div class="product-grid grid-4">
-                <div class="product-card" v-for="product in filteredProducts.slice(0, 12)" :key="'product-'+product._id">
-                  <img :src="product.imageUrl" alt="Product" class="card-img clickable" @click="changePage('product')" />
-                  <div class="card-info">
-                    <p class="card-title">{{ product.title }}</p>
-                    <p class="card-subtitle">{{ product.category }}</p>
-                    <p class="card-price">{{ product.price }} บาท</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="section section-gray-dark">
-            <div class="section-inner">
-              <div class="section-header">
-                <h2>Trend Product</h2>
-                <button class="see-all-btn" @click="changePage('seeall')">See All</button>
-              </div>
-              <div class="product-grid grid-5">
-                <div class="product-card" v-for="product in filteredProducts.slice(0, 5)" :key="'trend-'+product._id">
-                  <img :src="product.imageUrl" alt="Product" class="card-img clickable" @click="changePage('product')" />
-                  <div class="card-info">
-                    <p class="card-title">{{ product.title }}</p>
-                    <p class="card-subtitle">{{ product.category }}</p>
-                    <p class="card-price">{{ product.price }} บาท</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
         </main>
-
-        <footer class="footer">
-          <h1>Fahhh</h1>
-          <p>Copy Right © Fahhh.com</p>
-        </footer>
       </template>
 
-      <AccountPage v-else-if="currentPage === 'account'" @close="changePage('home')" @goRegister="changePage('register')" />
-      <Login v-else-if="currentPage === 'login'" @close="changePage('home')"@goRegister="changePage('register')" />
+      <CartPage 
+        v-else-if="currentPage === 'cart'" 
+        :cartItems="cart" 
+        @remove-item="removeFromCart" 
+        @close="changePage('home')" 
+        @clear-cart="cart = []" 
+      />
+
+      <ProductPage 
+        v-else-if="currentPage === 'product'" 
+        :product="selectedProduct" 
+        @add-to-cart="addToCart" 
+        @close="changePage('home')" 
+      />
+      
+      <Login v-else-if="currentPage === 'login'" @close="changePage('home')" @goRegister="changePage('register')" />
       <Register v-else-if="currentPage === 'register'" @back="changePage('login')" />
-      <CartPage v-else-if="currentPage === 'cart'" :cart="cart" @remove="removeFromCart" @close="changePage('home')" />
-      <ProductPage v-else-if="currentPage === 'product'" :product="{ _id: 6, title: 'Jinhsi', subtitle: '1/7 Scale', price: '499 $' }" :onAddToCart="addToCart" @close="changePage('home')" @open-see-all="changePage('seeall')" @open-checkout="changePage('checkout')" />
-      <CheckoutPage v-else-if="currentPage === 'checkout'" @close="changePage('home')" />
-      <SeeAllPage v-else-if="currentPage === 'seeall'" :products="filteredProducts" :search="search" @close="changePage('home')" @open-product="changePage('product')" />
+      <SeeAllPage v-else-if="currentPage === 'seeall'" :products="filteredProducts" :search="search" @close="changePage('home')" @open-product="openProduct" />
 
     </div>
   </div>
 </template>
-
 <style>
 body {
   margin: 0;
