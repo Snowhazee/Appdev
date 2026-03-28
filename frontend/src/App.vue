@@ -4,22 +4,23 @@ import cartIcon from './assets/cart.png'
 import accountIcon from './assets/account.png'
 import heroImg from './assets/placeholder.jpg' 
 import AccountPage from './AccountPage.vue'
+import Login from './Login.vue'
 import Register from './Register.vue'
 import CartPage from './CartPage.vue'
 import ProductPage from './ProductPage.vue'
 import SeeAllPage from './SeeAllPage.vue'
 import CheckoutPage from './CheckoutPage.vue'
-import OrderTrackingPage from './OrderTrackingPage.vue'
 import api from './services/api'
 
 const props = defineProps({
   title: String
 })
-
+const selectedProduct = ref(null)
 const currentPage = ref(localStorage.getItem('page') || 'home')
 const search = ref('')
 const cart = ref([])
 const products = ref([])
+const isLoggedIn = ref(!!localStorage.getItem('token'))
 
 onMounted(async () => {
   try {
@@ -36,22 +37,34 @@ const filteredProducts = computed(() => {
   )
 })
 
+function openProduct(product) {
+  selectedProduct.value = product
+  changePage('product')
+}
+
 function changePage(page) {
   currentPage.value = page
   localStorage.setItem('page', page)
 }
 
 function addToCart(product) {
-  const existingItem = cart.value.find(item => item.id === product.id)
+  const existingItem = cart.value.find(item => item._id === product._id)
   if (existingItem) {
     existingItem.quantity = (existingItem.quantity || 1) + 1
   } else {
     cart.value.push({ ...product, quantity: 1 })
   }
 }
-
 function removeFromCart(productId) {
   cart.value = cart.value.filter(item => item.id !== productId)
+}
+
+function handleAccount() {
+  if (isLoggedIn.value) {
+    changePage('account')
+  } else {
+    changePage('login')
+  }
 }
 </script>
 
@@ -78,7 +91,7 @@ function removeFromCart(productId) {
               Cart
             </button>
 
-            <button class="icon-btn" @click="changePage('account')">
+            <button class="icon-btn" @click="handleAccount">
               <img :src="accountIcon" alt="account" />
               Account
             </button>
@@ -181,12 +194,12 @@ function removeFromCart(productId) {
       </template>
 
       <AccountPage v-else-if="currentPage === 'account'" @close="changePage('home')" @goRegister="changePage('register')" />
-      <Register v-else-if="currentPage === 'register'" @back="changePage('account')" />
-      <CartPage v-else-if="currentPage === 'cart'" :cart="cart" @remove="removeFromCart" @close="changePage('home')" @checkout="changePage('checkout')" @track-order="changePage('tracking')" />
+      <Login v-else-if="currentPage === 'login'" @close="changePage('home')"@goRegister="changePage('register')" />
+      <Register v-else-if="currentPage === 'register'" @back="changePage('login')" />
+      <CartPage v-else-if="currentPage === 'cart'" :cart="cart" @remove="removeFromCart" @close="changePage('home')" />
       <ProductPage v-else-if="currentPage === 'product'" :product="{ _id: 6, title: 'Jinhsi', subtitle: '1/7 Scale', price: '499 $' }" :onAddToCart="addToCart" @close="changePage('home')" @open-see-all="changePage('seeall')" @open-checkout="changePage('checkout')" />
       <CheckoutPage v-else-if="currentPage === 'checkout'" @close="changePage('home')" />
       <SeeAllPage v-else-if="currentPage === 'seeall'" :products="filteredProducts" :search="search" @close="changePage('home')" @open-product="changePage('product')" />
-      <OrderTrackingPage v-else-if="currentPage === 'tracking'" @close="changePage('home')" />
 
     </div>
   </div>

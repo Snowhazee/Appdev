@@ -1,117 +1,49 @@
 <script setup>
-const emit = defineEmits(['close', 'goRegister'])
+import { ref } from 'vue'
+
+const emit = defineEmits(['close', 'logout'])
+
+const tab = ref('profile')
+
+const user = ref({
+  name: 'Fahhh',
+  email: 'fah@gmail.com'
+})
+
+const orders = ref([
+  { id: 1, name: 'Shorekeeper', price: '499$', status: 'Delivered' },
+  { id: 2, name: 'Yinlin', price: '399$', status: 'Pending' }
+])
+
+function logout() {
+  emit('logout')
+}
 </script>
 
 <template>
-  <div class="login-page">
-    <div class="left">
-      <div class="logo">
-        <h1>Fahhh</h1>
+  <div class="account">
+
+    <button @click="emit('close')">← Back</button>
+
+    <h1>Account</h1>
+
+    <div class="tabs">
+      <button @click="tab='profile'">Profile</button>
+      <button @click="tab='orders'">Orders</button>
+    </div>
+
+    <div v-if="tab==='profile'">
+      <p>Name: {{ user.name }}</p>
+      <p>Email: {{ user.email }}</p>
+    </div>
+
+    <div v-if="tab==='orders'">
+      <div v-for="o in orders" :key="o.id">
+        <p>{{ o.name }} - {{ o.price }} ({{ o.status }})</p>
       </div>
     </div>
 
-    <div class="right">
-      <div class="card">
-        <button class="back-button" @click="emit('close')">
-          ← Back
-        </button>
+    <button @click="logout">Logout</button>
 
-        <h1>LOGIN</h1>
-
-        <label>EMAIL</label>
-        <input type="text" placeholder="email" />
-
-        <label>PASSWORD</label>
-        <input type="password" placeholder="password" />
-
-        <button>LOGIN</button>
-
-        <p>
-          Not have account ?
-          <span @click="emit('goRegister')">Create one</span>
-        </p>
-      </div>
-    </div>
   </div>
 </template>
-
-<style scoped>
-.login-page {
-  display: flex;
-  height: 100vh;
-  font-family: Arial;
-}
-
-.left {
-  flex: 1;
-  background: #8db9d3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo {
-  background: white;
-  border-radius: 50%;
-  padding: 50px;
-  box-shadow: 0 0 0 10px #6f97d6;
-}
-
-.logo h1 {
-  font-size: 40px;
-  color : black
-}
-
-.right {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f2f2f2;
-}
-
-.card {
-  width: 350px;
-  background: #eee;
-  padding: 30px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-.card h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color :black;
-}
-
-.card label {
-  display: block;
-  margin-top: 10px;
-}
-
-.card input {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-}
-
-.card button {
-  margin-top: 20px;
-  width: 100%;
-  padding: 10px;
-  background: #8db9d3;
-  border: none;
-  cursor: pointer;
-}
-
-.back-button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.card span {
-  color: #8db9d3;
-  cursor: pointer;
-}
-</style>
