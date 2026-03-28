@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+// 1. นำเข้า protect มาจาก middleware
+const { protect } = require("../middleware/authMiddleware"); 
 
 const {
   createOrder,
@@ -8,10 +10,10 @@ const {
   updateOrderStatus,
 } = require("../controllers/order");
 
-// routes
-router.post("/", createOrder);
-router.get("/myorders", getMyOrders);
-router.get("/:id", getOrderById);
-router.put("/:id/status", updateOrderStatus);
+// 2. ใส่ protect ลงไปหน้า function ต่างๆ แบบนี้:
+router.post("/", protect, createOrder); // <--- ด่านตรวจอยู่ตรงนี้!
+router.get("/myorders", protect, getMyOrders);
+router.get("/:id", protect, getOrderById);
+router.put("/:id/status", protect, updateOrderStatus);
 
 module.exports = router;

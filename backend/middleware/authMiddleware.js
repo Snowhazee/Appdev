@@ -1,33 +1,32 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const mongoose = require("mongoose"); // เพิ่มอันนี้เข้ามาครับ
 
 const protect = async (req, res, next) => {
   let token;
-
   if (req.headers.authorization?.startsWith("Bearer")) {
     try {
       token = req.headers.authorization.split(" ")[1];
-      
-      // 1. เช็คว่าแกะ Token ออกมาได้อะไร
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log("✅ Decoded Token:", decoded); 
-
-      // 2. เช็คว่าหา User เจอไหม
+      
+      // ใช้ decoded.id ที่เรา .toString() มาจากหน้า Login
       req.user = await User.findById(decoded.id).select("-password");
       
       if (!req.user) {
-        console.log("❌ User not found in DB with ID:", decoded.id);
-        return res.status(401).json({ message: "User no longer exists" });
+        // ถ้ายังหาไม่เจอ ให้ลองหาด้วย _id โดยตรง (เผื่อเคส Object)
+        req.user = await User.findOne({ _id: decoded.id }).select("-password");
       }
 
-      console.log("✅ User found:", req.user.name);
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authorized, user not found in DB" });
+      }
       next();
     } catch (error) {
-      console.error("🔥 JWT Error:", error.message);
-      return res.status(401).json({ message: "Not authorized" });
+      return res.status(401).json({ message: "Token invalid" });
     }
+  } else {
+    return res.status(401).json({ message: "No token" });
   }
-  // ... ส่วนที่เหลือเหมือนเดิม
 };
 
 const admin = (req, res, next) => {
