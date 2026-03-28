@@ -6,7 +6,7 @@ const cors = require("cors");
 const productRoutes = require("./routes/product");
 const authRoutes = require("./routes/auth");
 const orderRoutes = require("./routes/order"); // เพิ่ม order
-
+const userRoutes = require("./routes/user"); // ถูกต้องตามชื่อไฟล์ในรูป
 const app = express();
 
 // Middleware
@@ -25,8 +25,8 @@ mongoose.connect(process.env.MONGO_URL)
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/users", userRoutes);
 
-// Test Route (เช็คว่า frontend ต่อได้ไหม)
 app.get("/api/test", (req, res) => {
   res.json({ message: "Backend connected successfully 🚀" });
 });
