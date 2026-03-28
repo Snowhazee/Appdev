@@ -78,27 +78,33 @@ function calculateTotal() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 30px;
+  height: 72px;          
+  padding: 0 20px;       
   background: #9EDAFF;
   color: black;
 }
 
-.header-left, .header-right {
+.header-left {
   flex: 1;
-}
-
-.header-right {
-  text-align: right;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .page-title {
-  margin: 0;
-  font-size: 24px;
+  flex: 1;
   text-align: center;
+  font-size: 30px;        
+  margin: 0;
+}
+
+.header-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .back-btn {
-  padding: 8px 15px;
+  padding: 6px 12px;
   border: none;
   border-radius: 4px;
   background: white;
@@ -115,7 +121,7 @@ function calculateTotal() {
   background: transparent;
   border: 1px solid black;
   color: black;
-  padding: 8px 15px;
+  padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
