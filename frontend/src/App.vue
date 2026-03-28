@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import cartIcon from './assets/cart.png'
 import accountIcon from './assets/account.png'
 import heroImg from './assets/placeholder.jpg' 
@@ -9,25 +9,25 @@ import CartPage from './CartPage.vue'
 import ProductPage from './ProductPage.vue'
 import SeeAllPage from './SeeAllPage.vue'
 import CheckoutPage from './CheckoutPage.vue'
+import api from './services/api'
+
+const props = defineProps({
+  title: String
+})
 
 const currentPage = ref(localStorage.getItem('page') || 'home')
 const search = ref('')
 const cart = ref([])
+const products = ref([])
 
-const products = ref([
-  { id: 1, title: 'Shorekeeper', subtitle: '1/7 Scale Figure', price: '499 $', image: heroImg },
-  { id: 2, title: 'Changli', subtitle: '1/7 Scale Figure', price: '499 $', image: heroImg },
-  { id: 3, title: 'Yinlin', subtitle: 'Action Figure', price: '399 $', image: heroImg },
-  { id: 4, title: 'Jiyan', subtitle: 'Action Figure', price: '399 $', image: heroImg },
-  { id: 5, title: 'Rover', subtitle: 'Nendoroid', price: '199 $', image: heroImg },
-  { id: 6, title: 'Jinhsi', subtitle: 'Premium PVC', price: '499 $', image: heroImg },
-  { id: 7, title: 'Danjin', subtitle: 'Action Figure', price: '299 $', image: heroImg },
-  { id: 8, title: 'Sanhua', subtitle: '1/7 Scale Figure', price: '399 $', image: heroImg },
-  { id: 9, title: 'Encore', subtitle: 'Nendoroid', price: '199 $', image: heroImg },
-  { id: 10, title: 'Calcharo', subtitle: 'Action Figure', price: '399 $', image: heroImg },
-  { id: 11, title: 'Yuanwu', subtitle: 'Action Figure', price: '299 $', image: heroImg },
-  { id: 12, title: 'Aalto', subtitle: 'Nendoroid', price: '199 $', image: heroImg }
-])
+onMounted(async () => {
+  try {
+    const res = await api.get('/products')
+    products.value = res.data
+  } catch (err) {
+    console.error("API ERROR:", err)
+  }
+})
 
 const filteredProducts = computed(() => {
   return products.value.filter(product =>
@@ -52,7 +52,6 @@ function addToCart(product) {
 function removeFromCart(productId) {
   cart.value = cart.value.filter(item => item.id !== productId)
 }
-
 </script>
 
 <template>
@@ -98,12 +97,12 @@ function removeFromCart(productId) {
                 <button class="see-all-btn" @click="changePage('seeall')">See All</button>
               </div>
               <div class="product-grid grid-4">
-                <div class="product-card" v-for="product in filteredProducts.slice(0, 8)" :key="'featured-'+product.id">
-                  <img :src="product.image" alt="Product" class="card-img clickable" @click="changePage('product')" />
+                <div class="product-card" v-for="product in filteredProducts.slice(0, 8)" :key="'featured-'+product._id">
+                  <img :src="product.imageUrl" alt="Product" class="card-img clickable" @click="changePage('product')" />
                   <div class="card-info">
                     <p class="card-title">{{ product.title }}</p>
-                    <p class="card-subtitle">{{ product.subtitle }}</p>
-                    <p class="card-price">{{ product.price }}</p>
+                    <p class="card-subtitle">{{ product.category }}</p>
+                    <p class="card-price">{{ product.price }} บาท</p>
                   </div>
                 </div>
               </div>
@@ -121,12 +120,12 @@ function removeFromCart(productId) {
                   <img :src="heroImg" alt="Best Seller" class="clickable" @click="changePage('product')" />
                 </div>
                 <div class="bs-right grid-smaller"> 
-                  <div class="product-card" v-for="product in filteredProducts.slice(0, 6)" :key="'bestseller-'+product.id">
-                    <img :src="product.image" alt="Product" class="card-img clickable" @click="changePage('product')" />
+                  <div class="product-card" v-for="product in filteredProducts.slice(0, 6)" :key="'bestseller-'+product._id">
+                    <img :src="product.imageUrl" alt="Product" class="card-img clickable" @click="changePage('product')" />
                     <div class="card-info">
                       <p class="card-title">{{ product.title }}</p>
-                      <p class="card-subtitle">{{ product.subtitle }}</p>
-                      <p class="card-price">{{ product.price }}</p>
+                      <p class="card-subtitle">{{ product.category }}</p>
+                      <p class="card-price">{{ product.price }} บาท</p>
                     </div>
                   </div>
                 </div>
@@ -141,12 +140,12 @@ function removeFromCart(productId) {
                 <button class="see-all-btn" @click="changePage('seeall')">See All</button>
               </div>
               <div class="product-grid grid-4">
-                <div class="product-card" v-for="product in filteredProducts.slice(0, 12)" :key="'product-'+product.id">
-                  <img :src="product.image" alt="Product" class="card-img clickable" @click="changePage('product')" />
+                <div class="product-card" v-for="product in filteredProducts.slice(0, 12)" :key="'product-'+product._id">
+                  <img :src="product.imageUrl" alt="Product" class="card-img clickable" @click="changePage('product')" />
                   <div class="card-info">
                     <p class="card-title">{{ product.title }}</p>
-                    <p class="card-subtitle">{{ product.subtitle }}</p>
-                    <p class="card-price">{{ product.price }}</p>
+                    <p class="card-subtitle">{{ product.category }}</p>
+                    <p class="card-price">{{ product.price }} บาท</p>
                   </div>
                 </div>
               </div>
@@ -160,12 +159,12 @@ function removeFromCart(productId) {
                 <button class="see-all-btn" @click="changePage('seeall')">See All</button>
               </div>
               <div class="product-grid grid-5">
-                <div class="product-card" v-for="product in filteredProducts.slice(0, 5)" :key="'trend-'+product.id">
-                  <img :src="product.image" alt="Product" class="card-img clickable" @click="changePage('product')" />
+                <div class="product-card" v-for="product in filteredProducts.slice(0, 5)" :key="'trend-'+product._id">
+                  <img :src="product.imageUrl" alt="Product" class="card-img clickable" @click="changePage('product')" />
                   <div class="card-info">
                     <p class="card-title">{{ product.title }}</p>
-                    <p class="card-subtitle">{{ product.subtitle }}</p>
-                    <p class="card-price">{{ product.price }}</p>
+                    <p class="card-subtitle">{{ product.category }}</p>
+                    <p class="card-price">{{ product.price }} บาท</p>
                   </div>
                 </div>
               </div>
@@ -183,7 +182,7 @@ function removeFromCart(productId) {
       <AccountPage v-else-if="currentPage === 'account'" @close="changePage('home')" @goRegister="changePage('register')" />
       <Register v-else-if="currentPage === 'register'" @back="changePage('account')" />
       <CartPage v-else-if="currentPage === 'cart'" :cart="cart" @remove="removeFromCart" @close="changePage('home')" />
-      <ProductPage v-else-if="currentPage === 'product'" :product="{ id: 6, title: 'Jinhsi', subtitle: '1/7 Scale', price: '499 $' }" :onAddToCart="addToCart" @close="changePage('home')" @open-see-all="changePage('seeall')" @open-checkout="changePage('checkout')" />
+      <ProductPage v-else-if="currentPage === 'product'" :product="{ _id: 6, title: 'Jinhsi', subtitle: '1/7 Scale', price: '499 $' }" :onAddToCart="addToCart" @close="changePage('home')" @open-see-all="changePage('seeall')" @open-checkout="changePage('checkout')" />
       <CheckoutPage v-else-if="currentPage === 'checkout'" @close="changePage('home')" />
       <SeeAllPage v-else-if="currentPage === 'seeall'" :products="filteredProducts" :search="search" @close="changePage('home')" @open-product="changePage('product')" />
 
